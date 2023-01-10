@@ -1,5 +1,10 @@
 package util;
 
+import app.Cameras;
+import app.Field;
+import app.Logger;
+import app.Settings;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -16,6 +21,10 @@ public class RoundedButton extends JPanel {
         super();
         this.ord = ord;
         setOpaque(false);
+
+        // TESTING
+        if (ord == 0) openNewWindow();
+
         this.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -29,6 +38,7 @@ public class RoundedButton extends JPanel {
             public void mouseReleased(MouseEvent e) {
                 super.mouseReleased(e);
                 setClicked(false);
+                openNewWindow();
                 repaint();
                 revalidate();
             }
@@ -79,13 +89,20 @@ public class RoundedButton extends JPanel {
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
 
-        System.out.println(clicked);
-
         //Draws the rounded opaque panel with borders.
         graphics.setColor(hovering ? hoverColor : getBackground());
         if (clicked) graphics.setColor(clickColor);
         graphics.fillRoundRect(0, 0, width,
                 height, arcs.width, arcs.height);
         graphics.setColor(getForeground());
+    }
+
+    protected void openNewWindow() {
+        switch (ord) {
+            case 0 -> new Logger();
+            case 1 -> new Field();
+            case 2 -> new Cameras();
+            case 3 -> new Settings();
+        }
     }
 }

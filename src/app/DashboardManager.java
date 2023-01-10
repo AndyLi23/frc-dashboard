@@ -1,22 +1,22 @@
 package app;
 
 import util.RoundedButton;
+import util.Window;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
-public class DashboardManager extends JFrame {
+public class DashboardManager extends Window {
+    public static ArrayList<Window> openWindows = new ArrayList<>();
     public DashboardManager() throws IOException {
-        super("Dashboard Manager");
+        super("Dashboard Manager", false, new Dimension(500, 300), new Dimension(600, 300));
 
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        this.setExtendedState(JFrame.MAXIMIZED_BOTH);
-
-        this.getContentPane().setBackground(new Color(25, 25, 25));
 
         String[] paths = new String[]{"docket", "radar", "camera", "settings"};
         String[] optionNames = new String[]{"Logger", "Field", "Cameras", "Settings"};
@@ -68,9 +68,19 @@ public class DashboardManager extends JFrame {
         mainPanel.add(optionsPanel);
         this.getContentPane().add(mainPanel);
 
+        showWindow();
+    }
 
-        this.pack();
-        this.setSize(600, 300);
-        this.setVisible(true);
+    public static void openedWindow(Window w) {
+        openWindows.add(w);
+    }
+
+    public static void closedWindow(Window w) {
+        openWindows.remove(w);
+    }
+
+    @Override
+    public void onClose() {
+        for (Window w : openWindows) w.onCloseAction();
     }
 }
