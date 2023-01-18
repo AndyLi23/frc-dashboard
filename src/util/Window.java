@@ -24,7 +24,10 @@ public class Window extends JFrame {
 
         if (maximized) this.setExtendedState(JFrame.MAXIMIZED_BOTH);
         this.setMinimumSize(minimumSize);
-        if (!maximized) this.setSize(size);
+        if (!maximized) {
+            this.setSize(size);
+            this.setPreferredSize(size);
+        }
 
         this.getContentPane().setBackground(background);
 
