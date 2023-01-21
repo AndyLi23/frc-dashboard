@@ -1,6 +1,7 @@
 package util;
 
 import org.w3c.dom.Text;
+import util.log.GraphDisplay;
 import util.log.TextDisplay;
 
 import javax.swing.*;
@@ -9,14 +10,14 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public class ResizablePanel extends JPanel {
-    int[] locations = {
+    public int[] locations = {
             SwingConstants.NORTH, SwingConstants.SOUTH, SwingConstants.WEST,
             SwingConstants.EAST, SwingConstants.NORTH_WEST,
             SwingConstants.NORTH_EAST, SwingConstants.SOUTH_WEST,
             SwingConstants.SOUTH_EAST
     };
 
-    int[] cursors = {
+    public int[] cursors = {
             Cursor.N_RESIZE_CURSOR, Cursor.S_RESIZE_CURSOR, Cursor.W_RESIZE_CURSOR,
             Cursor.E_RESIZE_CURSOR, Cursor.NW_RESIZE_CURSOR, Cursor.NE_RESIZE_CURSOR,
             Cursor.SW_RESIZE_CURSOR, Cursor.SE_RESIZE_CURSOR
@@ -24,8 +25,8 @@ public class ResizablePanel extends JPanel {
 
     protected int x, y;
     private final ResizablePanel self;
-    private int cornerDist = 6;
-    private int edgeDist = 4;
+    private int cornerDist = 8;
+    private int edgeDist = 5;
 
     public ResizablePanel(int x, int y) {
         this.self = this;
@@ -84,18 +85,10 @@ public class ResizablePanel extends JPanel {
                         northDragged();
                         eastDragged();
                     }
-                    case Cursor.N_RESIZE_CURSOR -> {
-                        northDragged();
-                    }
-                    case Cursor.S_RESIZE_CURSOR -> {
-                        southDragged();
-                    }
-                    case Cursor.W_RESIZE_CURSOR -> {
-                        westDragged();
-                    }
-                    case Cursor.E_RESIZE_CURSOR -> {
-                        eastDragged();
-                    }
+                    case Cursor.N_RESIZE_CURSOR -> northDragged();
+                    case Cursor.S_RESIZE_CURSOR -> southDragged();
+                    case Cursor.W_RESIZE_CURSOR -> westDragged();
+                    case Cursor.E_RESIZE_CURSOR -> eastDragged();
                 }
 
                 lastPoint = point;
@@ -109,6 +102,9 @@ public class ResizablePanel extends JPanel {
 
                 if(self instanceof TextDisplay) {
                     ((TextDisplay) self).resizeLabels();
+                }
+                if(self instanceof GraphDisplay) {
+                    ((GraphDisplay) self).repaint();
                 }
 
                 setCursor(Cursor.getPredefinedCursor(cursor));
@@ -128,6 +124,7 @@ public class ResizablePanel extends JPanel {
                 stored.width -= offsetX;
                 stored.x += offsetX;
 
+
                 if (offsetX < 0) {
                     if(stored.x <= bounds.x) {
                         bounds.width = Math.min(stored.width, bounds.width + bounds.x);
@@ -135,6 +132,7 @@ public class ResizablePanel extends JPanel {
                     }
                 } else {
                     if(stored.width <= getMinimumSize().width) {
+                        bounds.x += bounds.width - getMinimumSize().width;
                         bounds.width = getMinimumSize().width;
                     } else {
                         bounds.width = Math.min(stored.width, bounds.width + bounds.x);
@@ -154,6 +152,7 @@ public class ResizablePanel extends JPanel {
                     }
                 } else {
                     if(stored.height <= getMinimumSize().height) {
+                        bounds.y += bounds.height - getMinimumSize().height;
                         bounds.height = getMinimumSize().height;
                     } else {
                         bounds.height = Math.min(stored.height, bounds.height + bounds.y);

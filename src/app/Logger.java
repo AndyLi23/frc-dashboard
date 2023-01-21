@@ -2,6 +2,7 @@ package app;
 
 import util.Window;
 import util.log.Display;
+import util.log.GraphDisplay;
 import util.log.TextDisplay;
 
 import javax.swing.*;
@@ -15,9 +16,9 @@ public class Logger extends Window {
 
     public Logger() {
         // TESTING
-        super("Logger", false, new Dimension(500, 300), new Dimension(800, 500), new Color(200, 200, 200));
+        super("Logger", true, new Dimension(500, 300), new Dimension(800, 500), new Color(200, 200, 200));
 
-//        super("Logger", true, new Dimension(800, 400), new Dimension());
+//        super("Logger", true, new Dimension(500, 300), new Dimension());
 
         this.setLayout(null);
 
@@ -26,6 +27,8 @@ public class Logger extends Window {
             panels.put("Test " + i, new TextDisplay("Test " + i, "", 0, i * 30));
         }
 
+        panels.put("Graph!", new GraphDisplay("Graph!", "", 200, 200));
+
         for (Display d : panels.values()) {
             this.getContentPane().add(d);
             d.place();
@@ -33,7 +36,7 @@ public class Logger extends Window {
 
         showWindow();
 
-        loopTimer = new Timer(50, action -> {
+        loopTimer = new Timer(20, action -> {
             loop();
         });
         loopTimer.setRepeats(true);
@@ -46,7 +49,7 @@ public class Logger extends Window {
 //        System.out.println(d.getBounds());
 
         for (Display d : panels.values()) {
-            d.updateValue(String.valueOf((int) (Math.random() * Math.pow(10, 5 + (int) (Math.random() * 5)))));
+            d.updateValue(Integer.toString((int) (Math.random() * Math.pow(10, 5 + (int) (Math.random() * 5)))));
         }
 
         for (Component c : getComponents()) c.repaint();

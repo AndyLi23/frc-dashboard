@@ -2,6 +2,9 @@ package util.log;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class TextDisplay extends Display {
     private final JLabel nameLabel, valueLabel;
@@ -20,7 +23,7 @@ public class TextDisplay extends Display {
     }
 
     public TextDisplay(String name, String value, int x, int y) {
-        super(name, x, y);
+        super(name, value, x, y);
 
         nameLabel = new JLabel(name);
         valueLabel = new JLabel(value);
@@ -35,6 +38,7 @@ public class TextDisplay extends Display {
         nameLabel.setBackground(new Color(225, 225, 225));
         valueLabel.setBackground(new Color(255, 255 ,255));
         setBackground(new Color(255,  255, 255));
+
         nameLabel.setOpaque(true);
         valueLabel.setOpaque(true);
 
@@ -57,8 +61,11 @@ public class TextDisplay extends Display {
 
     @Override
     public void updateValue(Object value) {
-        valueLabel.setText((String) value);
+        super.updateValue(value);
+        if(((String) value).contains("\n")) valueLabel.setText("<html>" + ((String) value).replace("\n", "<br>") + "</html>");
+        else valueLabel.setText((String) value);
         resize();
+        resizeLabels();
     }
 
     public Dimension getLabelSize(int font) {
@@ -75,7 +82,7 @@ public class TextDisplay extends Display {
     @Override
     public Dimension getMinimumSize() {
         Dimension ls = getLabelSize(minimumFont);
-        return new Dimension(ls.width + 2, ls.height);
+        return new Dimension(ls.width+4, ls.height);
     }
 
     public void resizeMaxFont(Rectangle size) {
@@ -94,14 +101,6 @@ public class TextDisplay extends Display {
     }
 
     public void resizeLabels() {
-//        nameLabel.setSize(new Dimension((int) Math.ceil(nameLabel.getPreferredSize().getWidth()), getHeight()));
-//        nameLabel.setPreferredSize(new Dimension((int) Math.ceil(nameLabel.getPreferredSize().getWidth()), getHeight()));
-//        System.out.println(getHeight() + " " + nameLabel.getHeight() + " " + nameLabel.getPreferredSize().getHeight());
-//        nameLabel.revalidate();
-//        Rectangle r = nameLabel.getBounds();
-//        r.height = getHeight() - 2;
-//        nameLabel.setBounds(r);
-
         JLabel test = new JLabel(nameLabel.getText());
         test.setFont(new Font(Font.SANS_SERIF, Font.BOLD, nameLabel.getFont().getSize()));
         test.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.GRAY), BorderFactory.createEmptyBorder(paddingY, paddingX, paddingY, paddingX)));
@@ -113,5 +112,18 @@ public class TextDisplay extends Display {
         nameLabel.setSize(newDim);
         nameLabel.revalidate();
 
+    }
+
+    @Override
+    public void resize() {
+        Rectangle r = this.getBounds();
+        r.width = Math.max(r.width, (int) (getPreferredSize().getWidth() + 2));
+        r.height = Math.max(r.height, (int) getPreferredSize().getHeight());
+        this.setBounds(r);
+    }
+
+    @Override
+    public void place() {
+        this.setBounds(x, y, (int) getPreferredSize().getWidth() + 2, (int) getPreferredSize().getHeight());
     }
 }
