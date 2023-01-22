@@ -18,15 +18,15 @@ public class TextDisplay extends Display {
 
     private int maxWidth;
 
-    public TextDisplay(String name, String value) {
+    public TextDisplay(String name, Object value) {
         this(name, value, 0, 0);
     }
 
-    public TextDisplay(String name, String value, int x, int y) {
+    public TextDisplay(String name, Object value, int x, int y) {
         super(name, value, x, y);
 
         nameLabel = new JLabel(name);
-        valueLabel = new JLabel(value);
+        valueLabel = new JLabel(String.valueOf(value));
 
         nameLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, textSize));
         valueLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, textSize));
@@ -62,8 +62,8 @@ public class TextDisplay extends Display {
     @Override
     public void updateValue(Object value) {
         super.updateValue(value);
-        if(((String) value).contains("\n")) valueLabel.setText("<html>" + ((String) value).replace("\n", "<br>") + "</html>");
-        else valueLabel.setText((String) value);
+        if((String.valueOf(value)).contains("\n")) valueLabel.setText("<html>" + (String.valueOf(value)).replace("\n", "<br>") + "</html>");
+        else valueLabel.setText(String.valueOf(value));
         resize();
         resizeLabels();
     }

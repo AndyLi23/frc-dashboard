@@ -10,25 +10,35 @@ public class GraphDisplay extends Display {
 
     private Graph graph;
     private final int padding = 5;
-    private final int vHeight = 20;
-    private final Dimension minimumSize = new Dimension(200, 200);
-    private double t_left, t_right;
+    private final int vHeight = 25;
+    private final int textSize = 14;
+    private final Dimension minimumSize = new Dimension(300, 300);
+    private double t_left = 0, t_right = 0;
+    private double t_max = 120;
+    private int approxGridLines = 5;
+    private boolean zoomed = false;
+    private JLabel name;
 
-    public GraphDisplay(String name, String value) {
+    public GraphDisplay(String name, Object value) {
         this(name, value, 0, 0);
     }
 
-    public GraphDisplay(String name, String value, int x, int y) {
+    public GraphDisplay(String name, Object value, int x, int y) {
         super(name, value, x, y);
 
         this.setLayout(null);
 
         graph = new Graph();
+        this.name = new JLabel(name, SwingConstants.CENTER);
         this.add(graph);
+        this.add(this.name);
 
         this.setBounds(x, y, getPreferredSize().width, getPreferredSize().height);
 
         graph.setBounds(new Rectangle(padding, padding + vHeight, getWidth() - 2 * padding, getHeight() - vHeight - 2 * padding));
+        this.name.setBounds(new Rectangle(padding, padding, getWidth() - 2 * padding, vHeight - 2 * padding));
+
+        this.name.setFont(new Font(Font.SANS_SERIF, Font.BOLD, textSize));
 
         repaint();
     }
@@ -38,6 +48,7 @@ public class GraphDisplay extends Display {
         if(graph != null) {
             graph.setBounds(new Rectangle(padding, padding + vHeight, getWidth() - 2 * padding, getHeight() - vHeight - 2 * padding));
             graph.repaint();
+            name.setBounds(new Rectangle(padding, padding, getWidth() - 2 * padding, vHeight - padding));
         }
     }
 
@@ -47,6 +58,14 @@ public class GraphDisplay extends Display {
 
     public double getT_right() {
         return t_right;
+    }
+
+    public double getT_max() {
+        return t_max;
+    }
+
+    public int getApproxGridLines() {
+        return approxGridLines;
     }
 
     @Override

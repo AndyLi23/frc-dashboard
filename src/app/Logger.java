@@ -24,10 +24,10 @@ public class Logger extends Window {
 
 
         for(int i = 0; i < 10; i += 1) {
-            panels.put("Test " + i, new TextDisplay("Test " + i, "", 0, i * 30));
+            panels.put("Test " + i, new TextDisplay("Test " + i, 0, 0, i * 30));
         }
 
-        panels.put("Graph!", new GraphDisplay("Graph!", "", 200, 200));
+        panels.put("Graph!", new GraphDisplay("Graph!", 0, 200, 200));
 
         for (Display d : panels.values()) {
             this.getContentPane().add(d);
@@ -36,7 +36,7 @@ public class Logger extends Window {
 
         showWindow();
 
-        loopTimer = new Timer(20, action -> {
+        loopTimer = new Timer((int) (1000./60.), action -> {
             loop();
         });
         loopTimer.setRepeats(true);
@@ -45,11 +45,8 @@ public class Logger extends Window {
 
     public void loop() {
         // TESTING
-//        this.toFront();
-//        System.out.println(d.getBounds());
-
         for (Display d : panels.values()) {
-            d.updateValue(Integer.toString((int) (Math.random() * Math.pow(10, 5 + (int) (Math.random() * 5)))));
+            d.updateValue(((int) (Math.random() * 3) - 1) * (int) (Math.random() * Math.pow(10, 5 + (int) (Math.random() * 5))));
         }
 
         for (Component c : getComponents()) c.repaint();
