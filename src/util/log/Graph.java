@@ -2,6 +2,7 @@ package util.log;
 
 import javax.swing.*;
 import java.awt.*;
+import java.text.DecimalFormat;
 import java.util.AbstractMap;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -11,8 +12,12 @@ public class Graph extends JPanel {
 
     private int[] steps = {1, 2, 5, 10};
     private final int font = 11;
+    private int sh, sw;
     private double wr, hr;
     private double[] horizontalRange, verticalRange;
+
+    private DecimalFormat df = new DecimalFormat("0.####E0");
+
 
     public Graph() {
         super();
@@ -25,7 +30,9 @@ public class Graph extends JPanel {
         super.paintComponent(g);
 
         ArrayList<AbstractMap.SimpleImmutableEntry<Long, Object>> data = ((GraphDisplay) getParent()).getStored();
-        int lines = ((GraphDisplay) getParent()).getApproxGridLines();
+        int linesH = ((GraphDisplay) getParent()).getApproxGridLinesH();
+        int linesV = ((GraphDisplay) getParent()).getApproxGridLinesV();
+
 
         double tcur = data.get(data.size() - 1).getKey() / 1000.;
 
@@ -35,9 +42,9 @@ public class Graph extends JPanel {
         double tmax = 0;
         double tmin = -timeRange;
 
-        double approxRange = timeRange / lines;
+        double approxHRange = timeRange / linesH;
 
-        horizontalRange = getRange(tmax, tmin, approxRange);
+        horizontalRange = getRange(tmax, tmin, approxHRange);
 
 //        System.out.println(Arrays.toString(horizontalRange));
 
@@ -48,11 +55,8 @@ public class Graph extends JPanel {
 
 //        System.out.println(Arrays.toString(vRange));
 
-        double approxVRange = (vRange[1] - vRange[0]) / lines;
+        double approxVRange = (vRange[1] - vRange[0]) / linesV;
         verticalRange = getRange(vRange[1], vRange[0], approxVRange);
-
-        int hLineN = (int) ((horizontalRange[2] - horizontalRange[0]) / horizontalRange[1]) + 1;
-        int vLineN = (int) ((verticalRange[2] - verticalRange[0]) / verticalRange[1]) + 1;
 
 //        System.out.println(Arrays.toString(horizontalRange) + "  |  " + Arrays.toString(verticalRange) + "  |  " + hLineN + ", " + vLineN);
 
@@ -85,11 +89,8 @@ public class Graph extends JPanel {
 //                maxTextH = Math.max(maxTextH, (int) Math.ceil(g2d.getFont().getStringBounds(String.valueOf(l), g2d.getFontRenderContext()).getHeight()));
 //        }
 
-        g2d.setColor(Color.LIGHT_GRAY);
-        g2d.setStroke(new BasicStroke(1));
-
-        int sw = getWidth();
-        int sh = getHeight();
+        sw = getWidth();
+        sh = getHeight() - 14;
 
         double cw = horizontalRange[2] - horizontalRange[0];
         double ch = verticalRange[2] - verticalRange[0];
@@ -97,6 +98,11 @@ public class Graph extends JPanel {
         wr = sw / cw;
         hr = sh / ch;
 
+        g2d.setColor(new Color(235, 235, 235));
+        g2d.fillRect(0, sh, sw, getHeight());
+
+        g2d.setColor(Color.LIGHT_GRAY);
+        g2d.setStroke(new BasicStroke(1));
 
         if(horizontalRange[1] != 0) {
             for (double l = horizontalRange[0]; l <= horizontalRange[2]; l += horizontalRange[1]) {
@@ -115,7 +121,6 @@ public class Graph extends JPanel {
         int prevx = -1;
         int prevy = -1;
 
-
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
 
 
@@ -130,6 +135,26 @@ public class Graph extends JPanel {
             prevy = datay;
         }
 
+        if(verticalRange[1] != 0) {
+            g2d.setColor(Color.BLACK);
+
+            for (double l = verticalRange[0]; l <= verticalRange[2]; l += verticalRange[1]) {
+                if (getScreenY(l) == 0) g2d.drawString(String.valueOf(l), 3, 12);
+                else if (getScreenY(l) == sh - 1) g2d.drawString(String.valueOf(l), 3, sh - 2);
+                else g2d.drawString(String.valueOf(l), 3, getScreenY(l) + 4);
+            }
+        }
+
+        if(horizontalRange[1] != 0) {
+            for (double l = horizontalRange[0]; l <= horizontalRange[2]; l += horizontalRange[1]) {
+                String pr = String.valueOf(l);
+                if(pr.length() > 6) pr = String.format("%.2f", l);
+                int tw = (int) Math.ceil(g2d.getFont().getStringBounds(pr, g2d.getFontRenderContext()).getWidth());
+                if (getScreenX(l) == 0) g2d.drawString(pr, 2, getHeight() - 2);
+                else if (getScreenX(l) == sw - 1) g2d.drawString(pr, sw - tw, getHeight() - 2);
+                else g2d.drawString(pr, getScreenX(l) - tw/2, getHeight() - 2);
+            }
+        }
 
     }
 
@@ -141,8 +166,8 @@ public class Graph extends JPanel {
 
     public int getScreenY(double y) {
         double yt = y - verticalRange[0];
-        if((int) (yt * hr) == getHeight()) return getHeight() - 1;
-        return (int) (yt * hr);
+        if((sh - (int) (yt * hr)) == sh) return sh - 1;
+        return sh - (int) (yt * hr);
     }
 
     public double[] getRange(double tmax, double tmin, double approxRange) {

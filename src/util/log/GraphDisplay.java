@@ -12,10 +12,11 @@ public class GraphDisplay extends Display {
     private final int padding = 5;
     private final int vHeight = 25;
     private final int textSize = 14;
-    private final Dimension minimumSize = new Dimension(300, 300);
+    private final Dimension minimumSize = new Dimension(400, 300);
     private double t_left = 0, t_right = 0;
-    private double t_max = 120;
-    private int approxGridLines = 5;
+    private final double t_max = 120;
+    private final int approxGridLinesH = 4;
+    private final int approxGridLinesV = 6;
     private boolean zoomed = false;
     private JLabel name;
 
@@ -39,6 +40,8 @@ public class GraphDisplay extends Display {
         this.name.setBounds(new Rectangle(padding, padding, getWidth() - 2 * padding, vHeight - 2 * padding));
 
         this.name.setFont(new Font(Font.SANS_SERIF, Font.BOLD, textSize));
+
+        setBackground(new Color(235, 235, 235));
 
         updateResizeBounds();
     }
@@ -64,8 +67,12 @@ public class GraphDisplay extends Display {
         return t_max;
     }
 
-    public int getApproxGridLines() {
-        return approxGridLines;
+    public int getApproxGridLinesH() {
+        return approxGridLinesH;
+    }
+
+    public int getApproxGridLinesV() {
+        return approxGridLinesV;
     }
 
     @Override

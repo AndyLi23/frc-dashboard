@@ -47,7 +47,7 @@ public class Logger extends Window {
         long time = System.currentTimeMillis();
         // TESTING
         for (Display d : panels.values()) {
-            d.updateValue(((int) (Math.random() * 3) - 1) * (int) (Math.random() * Math.pow(10, 3 + (int) (Math.random() * 5))));
+            d.updateValue(((int) (Math.random() * 3) - 1) * (int) (Math.random() * Math.pow(10, 0 + (int) (Math.random() * 5))));
         }
 
         for (Component c : getComponents()) c.repaint();
