@@ -25,9 +25,7 @@ public class ResizablePanel extends JPanel {
 
     protected int x, y;
     private final ResizablePanel self;
-    private int cornerDist = 8;
-    private int edgeDist = 5;
-
+    private int cornerDist, edgeDist;
     public ResizablePanel(int x, int y) {
         this.self = this;
         this.x = x;
@@ -47,8 +45,8 @@ public class ResizablePanel extends JPanel {
             }
 
             @Override
-            public void mouseMoved(MouseEvent me) {
-                setCursor(Cursor.getPredefinedCursor(getCursor(me)));
+            public void mouseMoved(MouseEvent e) {
+                setCursor(Cursor.getPredefinedCursor(getCursor(e)));
             }
 
             @Override
@@ -98,6 +96,10 @@ public class ResizablePanel extends JPanel {
                 }
 
                 setBounds(bounds);
+
+                cornerDist = Math.max(6, Math.min(14, bounds.height / 3));
+                edgeDist = Math.max(4, Math.min(12, bounds.height / 4));
+
                 setNewLoc(bounds.x, bounds.y);
 
                 if(self instanceof TextDisplay) {
@@ -195,5 +197,10 @@ public class ResizablePanel extends JPanel {
 
     public Dimension getMinimumSize() {
         return new Dimension();
+    }
+
+    public void updateResizeBounds() {
+        cornerDist = Math.max(6, Math.min(14, getBounds().height / 3));
+        edgeDist = Math.max(4, Math.min(12, getBounds().height / 4));
     }
 }

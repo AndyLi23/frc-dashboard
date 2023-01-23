@@ -10,8 +10,9 @@ import java.util.Arrays;
 public class Graph extends JPanel {
 
     private int[] steps = {1, 2, 5, 10};
-    private final int padding = 10;
-    private final int font = 12;
+    private final int font = 11;
+    private double wr, hr;
+    private double[] horizontalRange, verticalRange;
 
     public Graph() {
         super();
@@ -36,7 +37,7 @@ public class Graph extends JPanel {
 
         double approxRange = timeRange / lines;
 
-        double[] horizontalRange = getRange(tmax, tmin, approxRange);
+        horizontalRange = getRange(tmax, tmin, approxRange);
 
 //        System.out.println(Arrays.toString(horizontalRange));
 
@@ -48,12 +49,12 @@ public class Graph extends JPanel {
 //        System.out.println(Arrays.toString(vRange));
 
         double approxVRange = (vRange[1] - vRange[0]) / lines;
-        double[] verticalRange = getRange(vRange[1], vRange[0], approxVRange);
+        verticalRange = getRange(vRange[1], vRange[0], approxVRange);
 
         int hLineN = (int) ((horizontalRange[2] - horizontalRange[0]) / horizontalRange[1]) + 1;
         int vLineN = (int) ((verticalRange[2] - verticalRange[0]) / verticalRange[1]) + 1;
 
-        System.out.println(Arrays.toString(horizontalRange) + "  |  " + Arrays.toString(verticalRange) + "  |  " + hLineN + ", " + vLineN);
+//        System.out.println(Arrays.toString(horizontalRange) + "  |  " + Arrays.toString(verticalRange) + "  |  " + hLineN + ", " + vLineN);
 
 
 //        System.out.println((tcur + tmin) * 1000 + " " + (tcur + tmax) * 1000);
@@ -62,30 +63,86 @@ public class Graph extends JPanel {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-        g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+//        g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
 
-        g2d.setColor(Color.BLACK);
 //        g2d.drawLine(0, 0, 100, 100);
-        g2d.setFont(new Font(Font.SANS_SERIF, Font.BOLD, font));
-        g2d.drawString("Testing", 100, 100);
+//        g2d.setFont(new Font(Font.SANS_SERIF, Font.BOLD, font));
+//        g2d.drawString("Testing", 100, 100);
 
-        double maxTextW = 0;
-        double maxTextH = 0;
+        int maxTextW = 0;
+        int maxTextH = 0;
 
 //        System.out.println(verticalRange[2]);
 
-        if(verticalRange[1] != 0) {
-            for (double l = verticalRange[0]; l <= verticalRange[2]; l += verticalRange[1])
-                maxTextW = Math.max(maxTextW, g2d.getFont().getStringBounds(String.valueOf(l), g2d.getFontRenderContext()).getWidth());
-        }
-//            maxTextW = Math.max(maxTextW, g2d.getFont().getStringBounds(String.valueOf(l), g2d.getFontRenderContext()).getWidth());
-//
+//        if(verticalRange[1] != 0) {
+//            for (double l = verticalRange[0]; l <= verticalRange[2]; l += verticalRange[1])
+//                maxTextW = Math.max(maxTextW, (int) Math.ceil(g2d.getFont().getStringBounds(String.valueOf(l), g2d.getFontRenderContext()).getWidth()));
+//        }
+////            maxTextW = Math.max(maxTextW, g2d.getFont().getStringBounds(String.valueOf(l), g2d.getFontRenderContext()).getWidth());
+////
+//        if(horizontalRange[1] != 0) {
+//            for(double l = horizontalRange[0]; l <= horizontalRange[2]; l += horizontalRange[1])
+//                maxTextH = Math.max(maxTextH, (int) Math.ceil(g2d.getFont().getStringBounds(String.valueOf(l), g2d.getFontRenderContext()).getHeight()));
+//        }
+
+        g2d.setColor(Color.LIGHT_GRAY);
+        g2d.setStroke(new BasicStroke(1));
+
+        int sw = getWidth();
+        int sh = getHeight();
+
+        double cw = horizontalRange[2] - horizontalRange[0];
+        double ch = verticalRange[2] - verticalRange[0];
+
+        wr = sw / cw;
+        hr = sh / ch;
+
+
         if(horizontalRange[1] != 0) {
-            for(double l = horizontalRange[0]; l <= horizontalRange[2]; l += horizontalRange[1])
-                maxTextH = Math.max(maxTextH, g2d.getFont().getStringBounds(String.valueOf(l), g2d.getFontRenderContext()).getHeight());
+            for (double l = horizontalRange[0]; l <= horizontalRange[2]; l += horizontalRange[1]) {
+                g2d.drawLine(getScreenX(l), 0, getScreenX(l), sh);
+            }
         }
 
-        System.out.println(maxTextH + ", " + maxTextW);
+        if(verticalRange[1] != 0) {
+            for (double l = verticalRange[0]; l <= verticalRange[2]; l += verticalRange[1]) {
+                g2d.drawLine(0, getScreenY(l), sw, getScreenY(l));
+            }
+        }
+
+        g2d.setColor(Color.RED);
+
+        int prevx = -1;
+        int prevy = -1;
+
+
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+
+
+        for (int ind = left_index; ind <= right_index; ++ind) {
+            int datax = getScreenX(data.get(ind).getKey() / 1000. - tcur);
+            int datay = getScreenY(Double.parseDouble(String.valueOf(data.get(ind).getValue())));
+//            g2d.fillOval(datax - 1, datay - 1, 2, 2);
+            if(prevx != -1) {
+                g2d.drawLine(prevx, prevy, datax, datay);
+            }
+            prevx = datax;
+            prevy = datay;
+        }
+
+
+    }
+
+    public int getScreenX(double x) {
+        double xt = x - horizontalRange[0];
+        if((int) (xt * wr) == getWidth()) return getWidth() - 1;
+        return (int) (xt * wr);
+    }
+
+    public int getScreenY(double y) {
+        double yt = y - verticalRange[0];
+        if((int) (yt * hr) == getHeight()) return getHeight() - 1;
+        return (int) (yt * hr);
     }
 
     public double[] getRange(double tmax, double tmin, double approxRange) {

@@ -40,7 +40,7 @@ public class GraphDisplay extends Display {
 
         this.name.setFont(new Font(Font.SANS_SERIF, Font.BOLD, textSize));
 
-        repaint();
+        updateResizeBounds();
     }
 
     @Override
