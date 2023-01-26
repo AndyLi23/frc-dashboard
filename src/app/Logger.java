@@ -52,7 +52,7 @@ public class Logger extends Window {
 
         for (Component c : getComponents()) c.repaint();
 
-        System.out.println(System.currentTimeMillis() - time);
+//        System.out.println(System.currentTimeMillis() - time);
     }
 
     @Override

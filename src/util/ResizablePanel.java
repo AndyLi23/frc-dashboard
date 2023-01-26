@@ -25,7 +25,7 @@ public class ResizablePanel extends JPanel {
 
     protected int x, y;
     private final ResizablePanel self;
-    private int cornerDist, edgeDist;
+    protected int cornerDist, edgeDist;
     public ResizablePanel(int x, int y) {
         this.self = this;
         this.x = x;
@@ -51,65 +51,67 @@ public class ResizablePanel extends JPanel {
 
             @Override
             public void mouseDragged(MouseEvent e) {
-                Point point = e.getLocationOnScreen();
-                offsetX = point.x - lastPoint.x;
-                offsetY = point.y - lastPoint.y;
+                if(cursor != Cursor.CROSSHAIR_CURSOR) {
+                    Point point = e.getLocationOnScreen();
+                    offsetX = point.x - lastPoint.x;
+                    offsetY = point.y - lastPoint.y;
 
-                windowWidth = getParent().getWidth();
-                windowHeight = getParent().getHeight();
+                    windowWidth = getParent().getWidth();
+                    windowHeight = getParent().getHeight();
 
-                bounds = getBounds();
+                    bounds = getBounds();
 
-                switch (cursor) {
-                    case Cursor.MOVE_CURSOR -> {
-                        stored.x += offsetX;
-                        stored.y += offsetY;
-                        bounds.x = Math.max(0, Math.min(stored.x, windowWidth - bounds.width));
-                        bounds.y = Math.max(0, Math.min(stored.y, windowHeight - bounds.height));
+                    switch (cursor) {
+                        case Cursor.MOVE_CURSOR -> {
+                            stored.x += offsetX;
+                            stored.y += offsetY;
+                            bounds.x = Math.max(0, Math.min(stored.x, windowWidth - bounds.width));
+                            bounds.y = Math.max(0, Math.min(stored.y, windowHeight - bounds.height));
+                        }
+                        case Cursor.SE_RESIZE_CURSOR -> {
+                            southDragged();
+                            eastDragged();
+                        }
+                        case Cursor.SW_RESIZE_CURSOR -> {
+                            southDragged();
+                            westDragged();
+                        }
+                        case Cursor.NW_RESIZE_CURSOR -> {
+                            northDragged();
+                            westDragged();
+                        }
+                        case Cursor.NE_RESIZE_CURSOR -> {
+                            northDragged();
+                            eastDragged();
+                        }
+                        case Cursor.N_RESIZE_CURSOR -> northDragged();
+                        case Cursor.S_RESIZE_CURSOR -> southDragged();
+                        case Cursor.W_RESIZE_CURSOR -> westDragged();
+                        case Cursor.E_RESIZE_CURSOR -> eastDragged();
                     }
-                    case Cursor.SE_RESIZE_CURSOR -> {
-                        southDragged();
-                        eastDragged();
+
+                    lastPoint = point;
+
+                    if (self instanceof TextDisplay) {
+                        ((TextDisplay) self).resizeMaxFont(bounds);
                     }
-                    case Cursor.SW_RESIZE_CURSOR -> {
-                        southDragged();
-                        westDragged();
+
+                    setBounds(bounds);
+
+                    cornerDist = Math.max(6, Math.min(14, bounds.height / 3));
+                    edgeDist = Math.max(4, Math.min(12, bounds.height / 4));
+
+                    setNewLoc(bounds.x, bounds.y);
+
+                    if (self instanceof TextDisplay) {
+                        ((TextDisplay) self).resizeLabels();
                     }
-                    case Cursor.NW_RESIZE_CURSOR -> {
-                        northDragged();
-                        westDragged();
+                    if (self instanceof GraphDisplay) {
+                        self.repaint();
                     }
-                    case Cursor.NE_RESIZE_CURSOR -> {
-                        northDragged();
-                        eastDragged();
-                    }
-                    case Cursor.N_RESIZE_CURSOR -> northDragged();
-                    case Cursor.S_RESIZE_CURSOR -> southDragged();
-                    case Cursor.W_RESIZE_CURSOR -> westDragged();
-                    case Cursor.E_RESIZE_CURSOR -> eastDragged();
+
+                    setCursor(Cursor.getPredefinedCursor(cursor));
                 }
-
-                lastPoint = point;
-
-                if(self instanceof TextDisplay) {
-                    ((TextDisplay) self).resizeMaxFont(bounds);
-                }
-
-                setBounds(bounds);
-
-                cornerDist = Math.max(6, Math.min(14, bounds.height / 3));
-                edgeDist = Math.max(4, Math.min(12, bounds.height / 4));
-
-                setNewLoc(bounds.x, bounds.y);
-
-                if(self instanceof TextDisplay) {
-                    ((TextDisplay) self).resizeLabels();
-                }
-                if(self instanceof GraphDisplay) {
-                    ((GraphDisplay) self).repaint();
-                }
-
-                setCursor(Cursor.getPredefinedCursor(cursor));
             }
 
             public void eastDragged() {

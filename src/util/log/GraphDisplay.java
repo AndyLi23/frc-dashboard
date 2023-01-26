@@ -2,9 +2,8 @@ package util.log;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class GraphDisplay extends Display {
 
@@ -17,8 +16,9 @@ public class GraphDisplay extends Display {
     private final double t_max = 120;
     private final int approxGridLinesH = 4;
     private final int approxGridLinesV = 6;
-    private boolean zoomed = false;
+    private boolean zoomed = false, clicked = false;
     private JLabel name;
+    private Point start, end;
 
     public GraphDisplay(String name, Object value) {
         this(name, value, 0, 0);
@@ -44,6 +44,36 @@ public class GraphDisplay extends Display {
         setBackground(new Color(235, 235, 235));
 
         updateResizeBounds();
+
+        MouseAdapter mouseAdapter = new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (getCursor(e) == Cursor.CROSSHAIR_CURSOR) {
+                    clicked = true;
+                    start = e.getPoint();
+                    end = e.getPoint();
+                    System.out.println("Clicked");
+                }
+            }
+
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                end = e.getPoint();
+                requestFocus();
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                if (getCursor(e) == Cursor.CROSSHAIR_CURSOR) {
+                    end = e.getPoint();
+                }
+                System.out.println("Released");
+                clicked = false;
+            }
+        };
+
+        addMouseListener(mouseAdapter);
+        addMouseMotionListener(mouseAdapter);
     }
 
     @Override
@@ -53,6 +83,18 @@ public class GraphDisplay extends Display {
             graph.repaint();
             name.setBounds(new Rectangle(padding, padding, getWidth() - 2 * padding, vHeight - padding));
         }
+    }
+
+    public boolean getClicked() {
+        return clicked;
+    }
+
+    public Point getStart() {
+        return start;
+    }
+
+    public Point getEnd() {
+        return end;
     }
 
     public double getT_left() {
@@ -88,8 +130,20 @@ public class GraphDisplay extends Display {
 
     }
 
+    public int getCursor(MouseEvent me) {
+        Rectangle rect = graph.getGraphDim();
+        if (rect != null && rect.contains(me.getPoint())) return Cursor.CROSSHAIR_CURSOR;
+        return super.getCursor(me);
+    }
+
     @Override
     public Dimension getMinimumSize() {
         return minimumSize;
+    }
+
+    @Override
+    public void updateResizeBounds() {
+        cornerDist = Math.max(6, Math.min(10, getBounds().height / 3));
+        edgeDist = Math.max(4, Math.min(8, getBounds().height / 4));
     }
 }

@@ -4,9 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.text.DecimalFormat;
 import java.util.AbstractMap;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Graph extends JPanel {
 
@@ -18,7 +16,6 @@ public class Graph extends JPanel {
 
     private DecimalFormat df = new DecimalFormat("0.####E0");
 
-
     public Graph() {
         super();
 
@@ -29,14 +26,16 @@ public class Graph extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        ArrayList<AbstractMap.SimpleImmutableEntry<Long, Object>> data = ((GraphDisplay) getParent()).getStored();
-        int linesH = ((GraphDisplay) getParent()).getApproxGridLinesH();
-        int linesV = ((GraphDisplay) getParent()).getApproxGridLinesV();
+        GraphDisplay parent = ((GraphDisplay) getParent());
+
+        ArrayList<AbstractMap.SimpleImmutableEntry<Long, Object>> data = parent.getStored();
+        int linesH = parent.getApproxGridLinesH();
+        int linesV = parent.getApproxGridLinesV();
 
 
         double tcur = data.get(data.size() - 1).getKey() / 1000.;
 
-        double timeRange = Math.min(((GraphDisplay) getParent()).getT_max(),
+        double timeRange = Math.min(parent.getT_max(),
                 tcur - data.get(0).getKey() / 1000.);
 
         double tmax = 0;
@@ -156,6 +155,29 @@ public class Graph extends JPanel {
             }
         }
 
+
+        if(parent.getClicked()) {
+            Point start = screenToCanvas(parent.getStart());
+            Point end = screenToCanvas(parent.getEnd());
+
+//            System.out.println(start + "  " + end);
+//
+//            System.out.println(start);
+
+            Graphics2D g2 = (Graphics2D) g;
+            g2.setComposite(AlphaComposite.SrcOver.derive(0.2f));
+            g2.setColor(Color.GRAY);
+
+            Rectangle f = new Rectangle(Math.min(end.x, start.x), Math.min(end.y, start.y),
+                    Math.abs(end.x - start.x), Math.abs(end.y - start.y));
+
+            g2.fill(f);
+
+            g2.setComposite(AlphaComposite.SrcOver);
+            g2.setStroke(new BasicStroke(2));
+            g2.draw(f);
+        }
+
     }
 
     public int getScreenX(double x) {
@@ -215,6 +237,14 @@ public class Graph extends JPanel {
             }
         }
         return ans;
+    }
+
+    public Rectangle getGraphDim() {
+        return new Rectangle(getX(), getY(), getWidth(), getHeight() - 14);
+    }
+
+    public Point screenToCanvas(Point p) {
+        return new Point(p.x - getX(), p.y - getY());
     }
 
 }
