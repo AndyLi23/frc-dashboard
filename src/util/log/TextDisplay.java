@@ -1,10 +1,11 @@
 package util.log;
 
+import app.Logger;
+import util.Pair;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class TextDisplay extends Display {
     private final JLabel nameLabel, valueLabel;
@@ -18,15 +19,29 @@ public class TextDisplay extends Display {
 
     private int maxWidth;
 
-    public TextDisplay(String name, Object value) {
-        this(name, value, 0, 0);
+    public TextDisplay(String name, Logger parent) {
+        this(name, 0, 0, Logger.getTypes(), parent, null);
     }
 
-    public TextDisplay(String name, Object value, int x, int y) {
-        super(name, value, x, y);
+    public TextDisplay(GraphDisplay t) {
+        this(t.getName(), t.getX(), t.getY(), t.getTypes(), t.getParentLogger(), t.getStored());
+    }
+
+    public TextDisplay(String name, int x, int y, Logger parent) {
+        this(name, x, y, Logger.getTypes(), parent, null);
+    }
+
+    public TextDisplay(String name, int x, int y, ArrayList<Logger.DisplayType> types, Logger parent, ArrayList<Pair> stored) {
+        super(name, x, y, types, parent, stored);
+
+        if (types.contains(Logger.DisplayType.kGraphDisplay)) {
+            JMenuItem graph = new JMenuItem("Change to Graph");
+            graph.addActionListener(e -> parentLogger.replace(this, Logger.DisplayType.kGraphDisplay));
+            popup.add(graph);
+        }
 
         nameLabel = new JLabel(name);
-        valueLabel = new JLabel(String.valueOf(value));
+        valueLabel = new JLabel(stored == null ? "" : stored.get(stored.size() - 1).getValue());
 
         nameLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, textSize));
         valueLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, textSize));

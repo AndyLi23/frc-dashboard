@@ -1,9 +1,13 @@
 package util.log;
 
+import app.Logger;
+import util.Pair;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 
 public class GraphDisplay extends Display {
 
@@ -12,7 +16,7 @@ public class GraphDisplay extends Display {
     private final int vHeight = 25;
     private final int textSize = 14;
     private final Dimension minimumSize = new Dimension(400, 300);
-    private double t_left = 0, t_right = 0;
+    private double t_left = 0, t_right = 0, y_left = 0, y_right = 0, t_cur = 0;
     private final double t_max = 120;
     private final int approxGridLinesH = 4;
     private final int approxGridLinesV = 6;
@@ -20,14 +24,30 @@ public class GraphDisplay extends Display {
     private JLabel name;
     private Point start, end;
 
-    public GraphDisplay(String name, Object value) {
-        this(name, value, 0, 0);
+    public GraphDisplay(String name, Logger parent) {
+        this(name, 0, 0, Logger.getTypes(), parent, null);
     }
 
-    public GraphDisplay(String name, Object value, int x, int y) {
-        super(name, value, x, y);
+    public GraphDisplay(TextDisplay t) {
+        this(t.getName(), t.getX(), t.getY(), t.getTypes(), t.getParentLogger(), t.getStored());
+    }
+
+    public GraphDisplay(String name, int x, int y, Logger parent) {
+        this(name, x, y, Logger.getTypes(), parent, null);
+    }
+
+    public GraphDisplay(String name, int x, int y, ArrayList<Logger.DisplayType> types, Logger parent, ArrayList<Pair> stored) {
+        super(name, x, y, types, parent, stored);
 
         this.setLayout(null);
+
+        JMenuItem zoom = new JMenuItem("Zoom Out");
+        zoom.addActionListener(e -> zoomed = false);
+        popup.add(zoom);
+
+        JMenuItem text = new JMenuItem("Change to Text");
+        text.addActionListener(e -> parentLogger.replace(this, Logger.DisplayType.kTextDisplay));
+        popup.add(text);
 
         graph = new Graph();
         this.name = new JLabel(name, SwingConstants.CENTER);
@@ -48,11 +68,12 @@ public class GraphDisplay extends Display {
         MouseAdapter mouseAdapter = new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                if (getCursor(e) == Cursor.CROSSHAIR_CURSOR) {
-                    clicked = true;
-                    start = e.getPoint();
-                    end = e.getPoint();
-                    System.out.println("Clicked");
+                if (e.getButton() == MouseEvent.BUTTON1) {
+                    if (getCursor(e) == Cursor.CROSSHAIR_CURSOR) {
+                        clicked = true;
+                        start = e.getPoint();
+                        end = e.getPoint();
+                    }
                 }
             }
 
@@ -64,11 +85,20 @@ public class GraphDisplay extends Display {
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                if (getCursor(e) == Cursor.CROSSHAIR_CURSOR) {
-                    end = e.getPoint();
+                if(e.getButton() == MouseEvent.BUTTON1) {
+                    if (getCursor(e) == Cursor.CROSSHAIR_CURSOR && !(start.x == end.x || start.y == end.y)) {
+                        end = e.getPoint();
+
+                        t_left = Math.min(graph.getGraphX(start.x), graph.getGraphX(end.x));
+                        t_right = Math.max(graph.getGraphX(start.x), graph.getGraphX(end.x));
+                        y_right = Math.max(graph.getGraphY(start.y), graph.getGraphY(end.y));
+                        y_left = Math.min(graph.getGraphY(start.y), graph.getGraphY(end.y));
+                        t_cur = graph.getT_cur();
+
+                        zoomed = true;
+                    }
+                    clicked = false;
                 }
-                System.out.println("Released");
-                clicked = false;
             }
         };
 
@@ -89,6 +119,10 @@ public class GraphDisplay extends Display {
         return clicked;
     }
 
+    public void setClicked(boolean clicked) {
+        this.clicked = clicked;
+    }
+
     public Point getStart() {
         return start;
     }
@@ -103,6 +137,22 @@ public class GraphDisplay extends Display {
 
     public double getT_right() {
         return t_right;
+    }
+
+    public double getY_left() {
+        return y_left;
+    }
+
+    public double getY_right() {
+        return y_right;
+    }
+
+    public boolean getZoomed() {
+        return zoomed;
+    }
+
+    public double getT_cur() {
+        return t_cur;
     }
 
     public double getT_max() {

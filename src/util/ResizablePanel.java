@@ -1,6 +1,5 @@
 package util;
 
-import org.w3c.dom.Text;
 import util.log.GraphDisplay;
 import util.log.TextDisplay;
 
@@ -26,10 +25,19 @@ public class ResizablePanel extends JPanel {
     protected int x, y;
     private final ResizablePanel self;
     protected int cornerDist, edgeDist;
+    protected boolean rMenu = false;
+
+    protected final JPopupMenu popup;
+
     public ResizablePanel(int x, int y) {
         this.self = this;
         this.x = x;
         this.y = y;
+
+        popup = new JPopupMenu();
+        JMenuItem remove = new JMenuItem("Remove");
+        remove.addActionListener(e -> getParent().getParent().getParent().getParent().remove(this));
+        popup.add(remove);
 
         MouseAdapter mouseAdapter = new MouseAdapter() {
             private Point lastPoint;
@@ -38,10 +46,20 @@ public class ResizablePanel extends JPanel {
 
             @Override
             public void mousePressed(MouseEvent e) {
-                lastPoint = e.getLocationOnScreen();
-                stored = getBounds();
-                cursor = getCursor(e);
-                getParent().setComponentZOrder(self,0);
+                moveToFront();
+
+                if (e.getButton() == MouseEvent.BUTTON1) {
+                    cursor = getCursor(e);
+                    if (cursor != Cursor.CROSSHAIR_CURSOR) {
+                        lastPoint = e.getLocationOnScreen();
+                        stored = getBounds();
+                        cursor = getCursor(e);
+                    }
+                } else if (e.getButton() == MouseEvent.BUTTON3) {
+                    initializeRightClick(e);
+                } else {
+                    cancelRightClick();
+                }
             }
 
             @Override
@@ -51,7 +69,7 @@ public class ResizablePanel extends JPanel {
 
             @Override
             public void mouseDragged(MouseEvent e) {
-                if(cursor != Cursor.CROSSHAIR_CURSOR) {
+                if(cursor != Cursor.CROSSHAIR_CURSOR && e.getButton() == MouseEvent.BUTTON1) {
                     Point point = e.getLocationOnScreen();
                     offsetX = point.x - lastPoint.x;
                     offsetY = point.y - lastPoint.y;
@@ -201,8 +219,21 @@ public class ResizablePanel extends JPanel {
         return new Dimension();
     }
 
+    public void initializeRightClick(MouseEvent e) {
+        rMenu = true;
+        popup.show(e.getComponent(), e.getX(), e.getY());
+    }
+
+    public void cancelRightClick() {
+        rMenu = false;
+    }
+
     public void updateResizeBounds() {
         cornerDist = Math.max(6, Math.min(14, getBounds().height / 3));
         edgeDist = Math.max(4, Math.min(12, getBounds().height / 4));
+    }
+
+    public void moveToFront() {
+        getParent().setComponentZOrder(self, 0);
     }
 }
