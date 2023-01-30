@@ -1,12 +1,20 @@
 package app;
 
-import util.Window;
-import util.log.Display;
-import util.log.GraphDisplay;
-import util.log.TextDisplay;
+import core.Window;
+import core.log.Display;
+import core.log.GraphDisplay;
+import core.log.TextDisplay;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -58,11 +66,11 @@ public class Logger extends Window {
         long time = System.currentTimeMillis();
         // TESTING
         for (Display d : panels.values()) {
-            if(Math.random() <= 0.001) {
-                d.updateValue("Oh no a string");
-            } else {
+//            if(Math.random() <= 0.001) {
+//                d.updateValue("Oh no a string");
+//            } else {n
                 d.updateValue(((int) (Math.random() * 3) - 1) * (int) (Math.random() * Math.pow(10, 0 + (int) (Math.random() * 5))));
-            }
+//            }
         }
 
         for (Component c : getComponents()) c.repaint();
@@ -90,6 +98,27 @@ public class Logger extends Window {
     @Override
     public void onCloseAction() {
         loopTimer.stop();
+        try {
+            //Creating the object
+            //Creating stream and writing the object
+            ObjectOutputStream out=new ObjectOutputStream(new FileOutputStream("res/stored/panels.txt"));
+            out.writeObject(panels);
+            out.flush();
+            //closing the stream
+            out.close();
+            System.out.println("success");
 
+            ObjectInputStream in=new ObjectInputStream(new FileInputStream("res/stored/panels.txt"));
+            HashMap<String, Display> r= (HashMap<String, Display>) in.readObject();
+            //printing the data of the serialized object
+            System.out.println(r);
+            //closing the stream
+            in.close();
+
+
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 }

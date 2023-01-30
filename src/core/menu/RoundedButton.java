@@ -1,4 +1,4 @@
-package util;
+package core.menu;
 
 import app.Cameras;
 import app.Field;
@@ -23,7 +23,7 @@ public class RoundedButton extends JPanel {
         setOpaque(false);
 
         // TESTING
-        if (ord == 0) openNewWindow();
+//        if (ord == 0) openNewWindow();
 
         this.addMouseListener(new MouseAdapter() {
             @Override

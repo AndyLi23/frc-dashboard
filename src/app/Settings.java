@@ -1,8 +1,7 @@
 package app;
 
-import util.Window;
+import core.Window;
 
-import javax.swing.*;
 import java.awt.*;
 
 public class Settings extends Window {

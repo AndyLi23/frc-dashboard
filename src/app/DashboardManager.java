@@ -1,7 +1,7 @@
 package app;
 
-import util.RoundedButton;
-import util.Window;
+import core.menu.RoundedButton;
+import core.Window;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -23,7 +23,7 @@ public class DashboardManager extends Window {
         RoundedButton[] options = new RoundedButton[4];
 
         for (int i = 0; i < paths.length; ++i) {
-            BufferedImage img = ImageIO.read(new File("img/" + paths[i] + ".png"));
+            BufferedImage img = ImageIO.read(new File("res/img/" + paths[i] + ".png"));
             JLabel image = new JLabel(new ImageIcon(img.getScaledInstance(i == 0 ? 50 : 60, i == 0 ? 50 : 60,
                     Image.SCALE_SMOOTH)));
             image.setAlignmentX(JLabel.CENTER_ALIGNMENT);

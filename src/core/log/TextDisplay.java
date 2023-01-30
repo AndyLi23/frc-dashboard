@@ -1,13 +1,14 @@
-package util.log;
+package core.log;
 
 import app.Logger;
-import util.Pair;
+import core.util.Pair;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class TextDisplay extends Display {
+public class TextDisplay extends Display implements Serializable {
     private final JLabel nameLabel, valueLabel;
     private final int textSize = 14;
     private String longest;

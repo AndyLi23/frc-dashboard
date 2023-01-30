@@ -1,15 +1,16 @@
-package util.log;
+package core.log;
 
 import app.Logger;
-import util.Pair;
+import core.util.Pair;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class GraphDisplay extends Display {
+public class GraphDisplay extends Display implements Serializable {
 
     private Graph graph;
     private final int padding = 5;

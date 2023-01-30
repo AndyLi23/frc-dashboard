@@ -1,13 +1,13 @@
-package util.log;
+package core.log;
 
 import app.Logger;
-import util.Pair;
-import util.ResizablePanel;
+import core.util.Pair;
 
 import java.awt.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Display extends ResizablePanel {
+public class Display extends MovablePanel implements Serializable {
     private String name;
     protected ArrayList<Logger.DisplayType> types;
 

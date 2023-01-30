@@ -13,15 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package util;
+package core.util;
 
+import java.io.Serializable;
 import java.util.Objects;
 /**
  * Container to ease passing around a tuple of two objects. This object provides a sensible
  * implementation of equals(), returning true if equals() is true on each of the contained
  * objects.
  */
-public class Pair {
+public class Pair implements Serializable {
     private final Long first;
     private final String second;
 

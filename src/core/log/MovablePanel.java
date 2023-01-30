@@ -1,35 +1,33 @@
-package util;
-
-import util.log.GraphDisplay;
-import util.log.TextDisplay;
+package core.log;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.Serializable;
 
-public class ResizablePanel extends JPanel {
-    public int[] locations = {
+public class MovablePanel extends JPanel implements Serializable {
+    public final int[] locations = {
             SwingConstants.NORTH, SwingConstants.SOUTH, SwingConstants.WEST,
             SwingConstants.EAST, SwingConstants.NORTH_WEST,
             SwingConstants.NORTH_EAST, SwingConstants.SOUTH_WEST,
             SwingConstants.SOUTH_EAST
     };
 
-    public int[] cursors = {
+    public final int[] cursors = {
             Cursor.N_RESIZE_CURSOR, Cursor.S_RESIZE_CURSOR, Cursor.W_RESIZE_CURSOR,
             Cursor.E_RESIZE_CURSOR, Cursor.NW_RESIZE_CURSOR, Cursor.NE_RESIZE_CURSOR,
             Cursor.SW_RESIZE_CURSOR, Cursor.SE_RESIZE_CURSOR
     };
 
     protected int x, y;
-    private final ResizablePanel self;
+    private final MovablePanel self;
     protected int cornerDist, edgeDist;
     protected boolean rMenu = false;
 
     protected final JPopupMenu popup;
 
-    public ResizablePanel(int x, int y) {
+    public MovablePanel(int x, int y) {
         this.self = this;
         this.x = x;
         this.y = y;

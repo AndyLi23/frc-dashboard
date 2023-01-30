@@ -1,11 +1,10 @@
-package util.log;
+package core.log;
 
-import util.Pair;
+import core.util.Pair;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Graph extends JPanel {
 
@@ -136,7 +135,7 @@ public class Graph extends JPanel {
                 g2d.setFont(new Font(Font.SANS_SERIF, Font.BOLD, font));
 
                 for (double l = verticalRange[0]; l <= verticalRange[2] + (verticalRange[1] / 2); l += verticalRange[1]) {
-                    if (getScreenY(l) < 2) g2d.drawString(String.valueOf(l), 3, 12);
+                    if (getScreenY(l) < 2) g2d.drawString(String.valueOf(l), 3, 11);
                     else if (getScreenY(l) == sh - 1) g2d.drawString(String.valueOf(l), 3, sh - 2);
                     else g2d.drawString(String.valueOf(l), 3, getScreenY(l) + 4);
                 }
