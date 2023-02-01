@@ -1,0 +1,5 @@
+wpimath-cpp-2023.2-osxuniversal.1-osxuniversal (edu.wpi.first.wpimath:wpimath-cpp:2023.2.1)
+wpinet-cpp-2023.2-osxuniversal.1-osxuniversal (edu.wpi.first.wpinet:wpinet-cpp:2023.2.1)
+wpiutil-cpp-2023.2-osxuniversal.1-osxuniversal (edu.wpi.first.wpiutil:wpiutil-cpp:2023.2.1)
+ntcore-cpp-2023.2-osxuniversal.1-osxuniversal (edu.wpi.first.ntcore:ntcore-cpp:2023.2.1)
+cscore-jnicvstatic-2023.2-osxuniversal.1-osxuniversal (edu.wpi.first.cscore:cscore-jnicvstatic:2023.2.1)

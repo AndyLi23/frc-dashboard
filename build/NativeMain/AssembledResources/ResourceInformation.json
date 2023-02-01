@@ -1,0 +1,23 @@
+{
+  "osx": {
+    "universal": [
+      "/osx/universal/shared/libwpinet.dylib",
+      "/osx/universal/shared/libwpimath.dylib",
+      "/osx/universal/shared/libwpinetjni.dylib",
+      "/osx/universal/shared/libcscorejnicvstatic.dylib",
+      "/osx/universal/shared/libntcorejni.dylib",
+      "/osx/universal/shared/libntcore.dylib",
+      "/osx/universal/shared/libwpiutil.dylib",
+      "/osx/universal/shared/libwpimathjni.dylib",
+      "/osx/universal/shared/libwpiutiljni.dylib"
+    ]
+  },
+  "versions": [
+    "wpimath-cpp-2023.2-osxuniversal.1-osxuniversal (edu.wpi.first.wpimath:wpimath-cpp:2023.2.1)",
+    "wpinet-cpp-2023.2-osxuniversal.1-osxuniversal (edu.wpi.first.wpinet:wpinet-cpp:2023.2.1)",
+    "wpiutil-cpp-2023.2-osxuniversal.1-osxuniversal (edu.wpi.first.wpiutil:wpiutil-cpp:2023.2.1)",
+    "ntcore-cpp-2023.2-osxuniversal.1-osxuniversal (edu.wpi.first.ntcore:ntcore-cpp:2023.2.1)",
+    "cscore-jnicvstatic-2023.2-osxuniversal.1-osxuniversal (edu.wpi.first.cscore:cscore-jnicvstatic:2023.2.1)"
+  ],
+  "hash": "0b3cc883a4e9584beec9d28d8e5ca701"
+}
