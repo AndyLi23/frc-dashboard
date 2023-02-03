@@ -4,6 +4,10 @@ import core.Window;
 import core.log.Display;
 import core.log.GraphDisplay;
 import core.log.TextDisplay;
+import core.util.Pair;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.NetworkTableValue;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,12 +15,15 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
 public class Logger extends Window {
     private final Timer loopTimer;
+    private final NetworkTableInstance nt;
+    private final NetworkTable table;
 
     private HashMap<String, Display> panels = new HashMap<>();
 
@@ -38,16 +45,21 @@ public class Logger extends Window {
         this.setLayout(null);
 
 
-        for(int i = 0; i < 10; i += 1) {
-            panels.put("Test " + i, new TextDisplay("Test " + i, 0, i * 30, this));
-        }
+//        for(int i = 0; i < 10; i += 1) {
+//            panels.put("Test " + i, new TextDisplay("Test " + i, 0, i * 30, this));
+//        }
+//
+//        panels.put("Graph!", new GraphDisplay("Graph!", 200, 200, this));
+//
+//        for (Display d : panels.values()) {
+//            this.add(d);
+//            d.place();
+//        }
+        nt = NetworkTableInstance.getDefault();
+        nt.setServerTeam(1351);
+        nt.startDSClient();
 
-        panels.put("Graph!", new GraphDisplay("Graph!", 200, 200, this));
-
-        for (Display d : panels.values()) {
-            this.add(d);
-            d.place();
-        }
+        table = nt.getTable("Log");
 
         showWindow();
 
@@ -61,12 +73,25 @@ public class Logger extends Window {
     public void loop() {
         long time = System.currentTimeMillis();
         // TESTING
-        for (Display d : panels.values()) {
+//        for (Display d : panels.values()) {
 //            if(Math.random() <= 0.001) {
 //                d.updateValue("Oh no a string");
 //            } else {n
-                d.updateValue(((int) (Math.random() * 3) - 1) * (int) (Math.random() * Math.pow(10, 0 + (int) (Math.random() * 5))));
+//                d.updateValue(((int) (Math.random() * 3) - 1) * (int) (Math.random() * Math.pow(10, 0 + (int) (Math.random() * 5))));
 //            }
+//        }
+        for (String key : table.getKeys()) {
+            if (table.getValue(key).getStringArray() == null) continue;
+            String[] data = table.getValue(key).getStringArray();
+            ArrayList<Pair> newData = convertData(data);
+            if (panels.containsKey(key)) {
+                panels.get(key).update(newData);
+            } else {
+                panels.put(key, new TextDisplay(key, 0, 0, getTypes(), this, newData));
+                this.add(panels.get(key));
+                panels.get(key).place();
+            }
+            table.putValue(key, NetworkTableValue.makeStringArray(null));
         }
 
         for (Component c : getComponents()) c.repaint();
@@ -78,6 +103,17 @@ public class Logger extends Window {
     public void remove(Component c) {
         super.remove(c);
         panels.remove(c.getName());
+    }
+
+    public ArrayList<Pair> convertData(String[] sa) {
+        ArrayList<Pair> res = new ArrayList<>();
+        for (String s : sa) {
+            int split = s.indexOf("|");
+            long time = Long.parseLong(s.substring(0, split));
+            String val = s.substring(split + 1);
+            res.add(new Pair(time, val));
+        }
+        return res;
     }
 
     public void replace(Component c, DisplayType type) {
