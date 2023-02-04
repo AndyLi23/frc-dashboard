@@ -118,8 +118,8 @@ public class Logger extends Window {
 
     public void replace(Component c, DisplayType type) {
         switch (type) {
-            case kGraphDisplay -> panels.replace(c.getName(), new GraphDisplay((TextDisplay) c));
-            case kTextDisplay -> panels.replace(c.getName(), new TextDisplay((GraphDisplay) c));
+            case kGraphDisplay: panels.replace(c.getName(), new GraphDisplay((TextDisplay) c));
+            case kTextDisplay: panels.replace(c.getName(), new TextDisplay((GraphDisplay) c));
         }
         this.add(panels.get(c.getName()));
         super.remove(c);

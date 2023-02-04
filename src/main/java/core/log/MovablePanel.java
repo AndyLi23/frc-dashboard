@@ -78,32 +78,32 @@ public class MovablePanel extends JPanel implements Serializable {
                     bounds = getBounds();
 
                     switch (cursor) {
-                        case Cursor.MOVE_CURSOR -> {
+                        case Cursor.MOVE_CURSOR: {
                             stored.x += offsetX;
                             stored.y += offsetY;
                             bounds.x = Math.max(0, Math.min(stored.x, windowWidth - bounds.width));
                             bounds.y = Math.max(0, Math.min(stored.y, windowHeight - bounds.height));
                         }
-                        case Cursor.SE_RESIZE_CURSOR -> {
+                        case Cursor.SE_RESIZE_CURSOR: {
                             southDragged();
                             eastDragged();
                         }
-                        case Cursor.SW_RESIZE_CURSOR -> {
+                        case Cursor.SW_RESIZE_CURSOR: {
                             southDragged();
                             westDragged();
                         }
-                        case Cursor.NW_RESIZE_CURSOR -> {
+                        case Cursor.NW_RESIZE_CURSOR: {
                             northDragged();
                             westDragged();
                         }
-                        case Cursor.NE_RESIZE_CURSOR -> {
+                        case Cursor.NE_RESIZE_CURSOR: {
                             northDragged();
                             eastDragged();
                         }
-                        case Cursor.N_RESIZE_CURSOR -> northDragged();
-                        case Cursor.S_RESIZE_CURSOR -> southDragged();
-                        case Cursor.W_RESIZE_CURSOR -> westDragged();
-                        case Cursor.E_RESIZE_CURSOR -> eastDragged();
+                        case Cursor.N_RESIZE_CURSOR: northDragged();
+                        case Cursor.S_RESIZE_CURSOR: southDragged();
+                        case Cursor.W_RESIZE_CURSOR: westDragged();
+                        case Cursor.E_RESIZE_CURSOR: eastDragged();
                     }
 
                     lastPoint = point;
@@ -192,17 +192,17 @@ public class MovablePanel extends JPanel implements Serializable {
     }
 
     private Rectangle getRectangle(int w, int h, int location) {
-        return switch (location) {
-            case SwingConstants.NORTH -> new Rectangle(cornerDist, 0, w - 2*cornerDist, edgeDist);
-            case SwingConstants.SOUTH -> new Rectangle(cornerDist, h - edgeDist, w - 2*cornerDist, edgeDist);
-            case SwingConstants.WEST -> new Rectangle(0, cornerDist, edgeDist, h - 2*cornerDist);
-            case SwingConstants.EAST -> new Rectangle(w - edgeDist, cornerDist, edgeDist, h - 2*cornerDist);
-            case SwingConstants.NORTH_WEST -> new Rectangle(0, 0, cornerDist, cornerDist);
-            case SwingConstants.NORTH_EAST -> new Rectangle(w - cornerDist, 0, cornerDist, cornerDist);
-            case SwingConstants.SOUTH_WEST -> new Rectangle(0, h - cornerDist, cornerDist, cornerDist);
-            case SwingConstants.SOUTH_EAST -> new Rectangle(w - cornerDist, h - cornerDist, cornerDist, cornerDist);
-            default -> new Rectangle();
-        };
+        switch (location) {
+            case SwingConstants.NORTH: return new Rectangle(cornerDist, 0, w - 2*cornerDist, edgeDist);
+            case SwingConstants.SOUTH: return new Rectangle(cornerDist, h - edgeDist, w - 2*cornerDist, edgeDist);
+            case SwingConstants.WEST: return new Rectangle(0, cornerDist, edgeDist, h - 2*cornerDist);
+            case SwingConstants.EAST: return new Rectangle(w - edgeDist, cornerDist, edgeDist, h - 2*cornerDist);
+            case SwingConstants.NORTH_WEST: return new Rectangle(0, 0, cornerDist, cornerDist);
+            case SwingConstants.NORTH_EAST: return new Rectangle(w - cornerDist, 0, cornerDist, cornerDist);
+            case SwingConstants.SOUTH_WEST: return new Rectangle(0, h - cornerDist, cornerDist, cornerDist);
+            case SwingConstants.SOUTH_EAST: return new Rectangle(w - cornerDist, h - cornerDist, cornerDist, cornerDist);
+            default: return new Rectangle();
+        }
     }
 
     public int getCursor(MouseEvent me) {

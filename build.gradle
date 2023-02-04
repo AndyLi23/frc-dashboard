@@ -1,79 +1,29 @@
-plugins {
-
-    id "java"
-
-    id 'com.github.johnrengelman.shadow' version '7.1.2'
-
-    id "edu.wpi.first.GradleRIO" version "2023.2.1"
-
-    id 'edu.wpi.first.WpilibTools' version '1.1.0'
-
+repositories {
+    mavenLocal()
+    mavenCentral()
+    google()
+    gradlePluginPortal()
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+    maven { url "https://oss.sonatype.org/content/repositories/releases/" }
+    maven { url "https://frcmaven.wpi.edu/artifactory/release/" }
 }
 
-
-
-wpilibTools.deps.wpilibVersion = wpi.versions.wpilibVersion.get()
-
-
-def nativeConfigName = 'wpilibNatives'
-
-def nativeConfig = configurations.create(nativeConfigName)
-
-
-def nativeTasks = wpilibTools.createExtractionTasks {
-
-    configurationName = nativeConfigName
-
-}
-
-
-nativeTasks.addToSourceSetResources(sourceSets.main)
-
-nativeConfig.dependencies.add wpilibTools.deps.wpilib("wpimath")
-
-nativeConfig.dependencies.add wpilibTools.deps.wpilib("wpinet")
-
-nativeConfig.dependencies.add wpilibTools.deps.wpilib("wpiutil")
-
-nativeConfig.dependencies.add wpilibTools.deps.wpilib("ntcore")
-
-nativeConfig.dependencies.add wpilibTools.deps.cscore()
-
+apply plugin: "java-library"
 
 dependencies {
-
-    implementation wpilibTools.deps.wpilibJava("wpiutil")
-
-    implementation wpilibTools.deps.wpilibJava("wpimath")
-
-    implementation wpilibTools.deps.wpilibJava("wpinet")
-
-    implementation wpilibTools.deps.wpilibJava("ntcore")
-
-    implementation wpilibTools.deps.wpilibJava("cscore")
-
-    implementation group: "com.fasterxml.jackson.core", name: "jackson-annotations", version: wpi.versions.jacksonVersion.get()
-    implementation group: "com.fasterxml.jackson.core", name: "jackson-core", version: wpi.versions.jacksonVersion.get()
-    implementation group: "com.fasterxml.jackson.core", name: "jackson-databind", version: wpi.versions.jacksonVersion.get()
-
-    implementation group: "org.ejml", name: "ejml-simple", version: wpi.versions.ejmlVersion.get()
-
-
+    api "edu.wpi.first.ntcore:ntcore-java:2023.1.1"
+    api "edu.wpi.first.wpiutil:wpiutil-java:2023.1.1"
+    api "edu.wpi.first.ntcore:ntcore-jni:2023.1.1:windowsx86-64"
+    api "edu.wpi.first.ntcore:ntcore-jni:2023.1.1:linuxx86-64"
+    api "edu.wpi.first.ntcore:ntcore-jni:2023.1.1:osxuniversal"
 }
 
+apply plugin: "application"
 
-shadowJar {
-
-    archiveBaseName = "TestApplication"
-
-    archiveVersion = ""
-
-    exclude("module-info.class")
-
-    archiveClassifier.set(wpilibTools.currentPlatform.platformName)
-
+ext {
+    javaMainClass = "App"
 }
 
-wrapper {
-    gradleVersion = '7.5.1'
+application {
+    mainClassName = javaMainClass
 }

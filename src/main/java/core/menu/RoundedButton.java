@@ -99,10 +99,10 @@ public class RoundedButton extends JPanel {
 
     protected void openNewWindow() {
         switch (ord) {
-            case 0 -> new Logger();
-            case 1 -> new Field();
-            case 2 -> new Cameras();
-            case 3 -> new Settings();
+            case 0: new Logger();
+            case 1: new Field();
+            case 2: new Cameras();
+            case 3: new Settings();
         }
     }
 }
