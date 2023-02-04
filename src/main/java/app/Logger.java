@@ -96,7 +96,7 @@ public class Logger extends Window {
 
         for (Component c : getComponents()) c.repaint();
 
-        if(System.currentTimeMillis() - time > 1) System.out.println(System.currentTimeMillis() - time);
+//        if(System.currentTimeMillis() - time > 1) System.out.println(System.currentTimeMillis() - time);
     }
 
     @Override
@@ -118,8 +118,8 @@ public class Logger extends Window {
 
     public void replace(Component c, DisplayType type) {
         switch (type) {
-            case kGraphDisplay: panels.replace(c.getName(), new GraphDisplay((TextDisplay) c));
-            case kTextDisplay: panels.replace(c.getName(), new TextDisplay((GraphDisplay) c));
+            case kGraphDisplay: panels.replace(c.getName(), new GraphDisplay((TextDisplay) c)); break;
+            case kTextDisplay: panels.replace(c.getName(), new TextDisplay((GraphDisplay) c)); break;
         }
         this.add(panels.get(c.getName()));
         super.remove(c);
@@ -138,12 +138,12 @@ public class Logger extends Window {
             out.flush();
             //closing the stream
             out.close();
-            System.out.println("success");
+//            System.out.println("success");
 
             ObjectInputStream in=new ObjectInputStream(new FileInputStream("res/stored/panels.txt"));
             HashMap<String, Display> r= (HashMap<String, Display>) in.readObject();
             //printing the data of the serialized object
-            System.out.println(r);
+//            System.out.println(r);
             //closing the stream
             in.close();
 

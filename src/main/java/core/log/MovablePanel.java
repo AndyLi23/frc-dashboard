@@ -83,27 +83,32 @@ public class MovablePanel extends JPanel implements Serializable {
                             stored.y += offsetY;
                             bounds.x = Math.max(0, Math.min(stored.x, windowWidth - bounds.width));
                             bounds.y = Math.max(0, Math.min(stored.y, windowHeight - bounds.height));
+                            break;
                         }
                         case Cursor.SE_RESIZE_CURSOR: {
                             southDragged();
                             eastDragged();
+                            break;
                         }
                         case Cursor.SW_RESIZE_CURSOR: {
                             southDragged();
                             westDragged();
+                            break;
                         }
                         case Cursor.NW_RESIZE_CURSOR: {
                             northDragged();
                             westDragged();
+                            break;
                         }
                         case Cursor.NE_RESIZE_CURSOR: {
                             northDragged();
                             eastDragged();
+                            break;
                         }
-                        case Cursor.N_RESIZE_CURSOR: northDragged();
-                        case Cursor.S_RESIZE_CURSOR: southDragged();
-                        case Cursor.W_RESIZE_CURSOR: westDragged();
-                        case Cursor.E_RESIZE_CURSOR: eastDragged();
+                        case Cursor.N_RESIZE_CURSOR: northDragged(); break;
+                        case Cursor.S_RESIZE_CURSOR: southDragged(); break;
+                        case Cursor.W_RESIZE_CURSOR: westDragged(); break;
+                        case Cursor.E_RESIZE_CURSOR: eastDragged(); break;
                     }
 
                     lastPoint = point;

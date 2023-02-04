@@ -12,17 +12,17 @@ import java.awt.event.MouseEvent;
 
 public class RoundedButton extends JPanel {
 
-    protected Dimension arcs = new Dimension(25, 25);
-    protected Color hoverColor, clickColor;
-    protected boolean clicked, hovering;
-    protected int ord;
+    private Dimension arcs = new Dimension(25, 25);
+    private Color hoverColor, clickColor;
+    private boolean clicked, hovering;
+    private final int ord;
 
     public RoundedButton(int ord) {
         super();
         this.ord = ord;
         setOpaque(false);
 
-        // TESTING
+//         TESTING
 //        if (ord == 0) openNewWindow();
 
         this.addMouseListener(new MouseAdapter() {
@@ -97,12 +97,16 @@ public class RoundedButton extends JPanel {
         graphics.setColor(getForeground());
     }
 
-    protected void openNewWindow() {
+    private void openNewWindow() {
         switch (ord) {
             case 0: new Logger();
+                break;
             case 1: new Field();
+                break;
             case 2: new Cameras();
+                break;
             case 3: new Settings();
+                break;
         }
     }
 }
