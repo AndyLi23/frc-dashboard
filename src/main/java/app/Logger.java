@@ -44,22 +44,12 @@ public class Logger extends Window {
 
         this.setLayout(null);
 
-
-//        for(int i = 0; i < 10; i += 1) {
-//            panels.put("Test " + i, new TextDisplay("Test " + i, 0, i * 30, this));
-//        }
-//
-//        panels.put("Graph!", new GraphDisplay("Graph!", 200, 200, this));
-//
-//        for (Display d : panels.values()) {
-//            this.add(d);
-//            d.place();
 //        }
         nt = NetworkTableInstance.getDefault();
-        nt.setServerTeam(1351);
+        nt.startClientTeam(1351);
         nt.startDSClient();
 
-        table = nt.getTable("Log");
+        table = nt.getTable("SmartDashboard");
 
         showWindow();
 
@@ -72,6 +62,8 @@ public class Logger extends Window {
 
     public void loop() {
         long time = System.currentTimeMillis();
+        
+        System.out.println(table.getKeys());
         // TESTING
 //        for (Display d : panels.values()) {
 //            if(Math.random() <= 0.001) {
@@ -80,19 +72,19 @@ public class Logger extends Window {
 //                d.updateValue(((int) (Math.random() * 3) - 1) * (int) (Math.random() * Math.pow(10, 0 + (int) (Math.random() * 5))));
 //            }
 //        }
-        for (String key : table.getKeys()) {
-            if (table.getValue(key).getStringArray() == null) continue;
-            String[] data = table.getValue(key).getStringArray();
-            ArrayList<Pair> newData = convertData(data);
-            if (panels.containsKey(key)) {
-                panels.get(key).update(newData);
-            } else {
-                panels.put(key, new TextDisplay(key, 0, 0, getTypes(), this, newData));
-                this.add(panels.get(key));
-                panels.get(key).place();
-            }
-            table.putValue(key, NetworkTableValue.makeStringArray(null));
-        }
+//        for (String key : table.getKeys()) {
+//            if (table.getValue(key).getStringArray() == null) continue;
+//            String[] data = table.getValue(key).getStringArray();
+//            ArrayList<Pair> newData = convertData(data);
+//            if (panels.containsKey(key)) {
+//                panels.get(key).update(newData);
+//            } else {
+//                panels.put(key, new TextDisplay(key, 0, 0, getTypes(), this, newData));
+//                this.add(panels.get(key));
+//                panels.get(key).place();
+//            }
+//            table.putValue(key, NetworkTableValue.makeStringArray(null));
+//        }
 
         for (Component c : getComponents()) c.repaint();
 

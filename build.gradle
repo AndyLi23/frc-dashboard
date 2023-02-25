@@ -4,81 +4,33 @@ plugins {
 
     id 'application'
 
-    id 'com.github.johnrengelman.shadow' version '7.1.2'
-
-    id "edu.wpi.first.GradleRIO" version "2023.2.1"
-
-    id 'edu.wpi.first.WpilibTools' version '1.1.0'
-
 }
 
+repositories {
+    mavenLocal()
+    mavenCentral()
+    google()
+    gradlePluginPortal()
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+    maven { url "https://oss.sonatype.org/content/repositories/releases/" }
+    maven { url "https://frcmaven.wpi.edu/artifactory/release/" }
+}
 
 mainClassName = 'App'
 
-
-wpilibTools.deps.wpilibVersion = wpi.versions.wpilibVersion.get()
-
-
-def nativeConfigName = 'wpilibNatives'
-
-def nativeConfig = configurations.create(nativeConfigName)
-
-
-def nativeTasks = wpilibTools.createExtractionTasks {
-
-    configurationName = nativeConfigName
-
-}
-
-
-nativeTasks.addToSourceSetResources(sourceSets.main)
-
-nativeConfig.dependencies.add wpilibTools.deps.wpilib("wpimath")
-
-nativeConfig.dependencies.add wpilibTools.deps.wpilib("wpinet")
-
-nativeConfig.dependencies.add wpilibTools.deps.wpilib("wpiutil")
-
-nativeConfig.dependencies.add wpilibTools.deps.wpilib("ntcore")
-
-nativeConfig.dependencies.add wpilibTools.deps.cscore()
-
-
 dependencies {
+    implementation "edu.wpi.first.ntcore:ntcore-java:2021.3.1"
 
-    implementation wpilibTools.deps.wpilibJava("wpiutil")
+    // Add wpiutil-java
+    implementation "edu.wpi.first.wpiutil:wpiutil-java:2021.3.1"
 
-    implementation wpilibTools.deps.wpilibJava("wpimath")
-
-    implementation wpilibTools.deps.wpilibJava("wpinet")
-
-    implementation wpilibTools.deps.wpilibJava("ntcore")
-
-    implementation wpilibTools.deps.wpilibJava("cscore")
-
-
-    implementation group: "com.fasterxml.jackson.core", name: "jackson-annotations", version: wpi.versions.jacksonVersion.get()
-
-    implementation group: "com.fasterxml.jackson.core", name: "jackson-core", version: wpi.versions.jacksonVersion.get()
-
-    implementation group: "com.fasterxml.jackson.core", name: "jackson-databind", version: wpi.versions.jacksonVersion.get()
-
-
-    implementation group: "org.ejml", name: "ejml-simple", version: wpi.versions.ejmlVersion.get()
-
-}
-
-
-shadowJar {
-
-    archiveBaseName = "App"
-
-    archiveVersion = ""
-
-    exclude("module-info.class")
-
-    archiveClassifier.set(wpilibTools.currentPlatform.platformName)
-
+    // Add ntcore-jni for runtime. We are adding all supported platforms
+    // so that our application will work on all supported platforms.
+    implementation "edu.wpi.first.ntcore:ntcore-jni:2021.3.1:windowsx86"
+    implementation "edu.wpi.first.ntcore:ntcore-jni:2021.3.1:windowsx86-64"
+    implementation "edu.wpi.first.ntcore:ntcore-jni:2021.3.1:linuxx86-64"
+    implementation "edu.wpi.first.ntcore:ntcore-jni:2021.3.1:linuxraspbian"
+    implementation "edu.wpi.first.ntcore:ntcore-jni:2021.3.1:osxx86-64"
 }
 
 
