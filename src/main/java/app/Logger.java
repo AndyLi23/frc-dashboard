@@ -22,10 +22,10 @@ import java.util.HashMap;
 
 public class Logger extends Window {
     private final Timer loopTimer;
-    private final NetworkTableInstance nt;
-    private final NetworkTable table;
+//    private final NetworkTableInstance nt;
+//    private final NetworkTable table;
 
-    private HashMap<String, Display> panels = new HashMap<>();
+    private final HashMap<String, Display> panels = new HashMap<>();
 
     public enum DisplayType {
         kTextDisplay,
@@ -44,12 +44,20 @@ public class Logger extends Window {
 
         this.setLayout(null);
 
-//        }
-        nt = NetworkTableInstance.getDefault();
-        nt.startClientTeam(1351);
-        nt.startDSClient();
+//        nt = NetworkTableInstance.getDefault();
+//        nt.startClientTeam(1351);
+//        nt.startDSClient();
+//
+//        table = nt.getTable("SmartDashboard");
 
-        table = nt.getTable("SmartDashboard");
+        for(int i = 0; i < 10; ++i) {
+            panels.put("Testing " + i, new TextDisplay("Testing " + i, 0, i*30,this));
+        }
+
+        for (Display d : panels.values()) {
+            this.add(d);
+            d.place();
+        }
 
         showWindow();
 
@@ -63,15 +71,15 @@ public class Logger extends Window {
     public void loop() {
         long time = System.currentTimeMillis();
         
-        System.out.println(table.getKeys());
         // TESTING
-//        for (Display d : panels.values()) {
-//            if(Math.random() <= 0.001) {
-//                d.updateValue("Oh no a string");
-//            } else {n
-//                d.updateValue(((int) (Math.random() * 3) - 1) * (int) (Math.random() * Math.pow(10, 0 + (int) (Math.random() * 5))));
-//            }
-//        }
+        for (Display d : panels.values()) {
+            if(Math.random() <= 0.001) {
+                d.updateValue("Oh no a string");
+            } else {
+                d.updateValue(((int) (Math.random() * 3) - 1) * (int) (Math.random() * Math.pow(10, (int) (Math.random() * 5))));
+            }
+        }
+
 //        for (String key : table.getKeys()) {
 //            if (table.getValue(key).getStringArray() == null) continue;
 //            String[] data = table.getValue(key).getStringArray();
@@ -97,16 +105,16 @@ public class Logger extends Window {
         panels.remove(c.getName());
     }
 
-    public ArrayList<Pair> convertData(String[] sa) {
-        ArrayList<Pair> res = new ArrayList<>();
-        for (String s : sa) {
-            int split = s.indexOf("|");
-            long time = Long.parseLong(s.substring(0, split));
-            String val = s.substring(split + 1);
-            res.add(new Pair(time, val));
-        }
-        return res;
-    }
+//    public ArrayList<Pair> convertData(String[] sa) {
+//        ArrayList<Pair> res = new ArrayList<>();
+//        for (String s : sa) {
+//            int split = s.indexOf("|");
+//            long time = Long.parseLong(s.substring(0, split));
+//            String val = s.substring(split + 1);
+//            res.add(new Pair(time, val));
+//        }
+//        return res;
+//    }
 
     public void replace(Component c, DisplayType type) {
         switch (type) {
