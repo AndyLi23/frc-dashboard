@@ -9,6 +9,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class GraphDisplay extends Display implements Serializable {
 
@@ -70,8 +71,6 @@ public class GraphDisplay extends Display implements Serializable {
 
         setBackground(new Color(235, 235, 235));
 
-        updateResizeBounds();
-
         MouseAdapter mouseAdapter = new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -93,7 +92,7 @@ public class GraphDisplay extends Display implements Serializable {
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                if(e.getButton() == MouseEvent.BUTTON1) {
+                if(clicked) {
                     if (!(start.x == end.x || start.y == end.y)) {
                         end = e.getPoint();
                         end.x = Math.max(graph.getX(), Math.min(end.x, graph.getX() + graph.getWidth()));
@@ -105,13 +104,15 @@ public class GraphDisplay extends Display implements Serializable {
                         y_left = Math.min(graph.getGraphY(start.y), graph.getGraphY(end.y));
                         t_cur = graph.getT_cur();
 
-                        zoomed = true;
+                        if(!zoomed) {
+                            zoomed = true;
 
-                        popup.remove(resize);
+                            popup.remove(resize);
 
-                        JMenuItem zoom = new JMenuItem("Zoom Out");
-                        zoom.addActionListener(a -> zoomOut());
-                        popup.add(zoom, 0);
+                            JMenuItem zoom = new JMenuItem("Zoom Out");
+                            zoom.addActionListener(a -> zoomOut());
+                            popup.add(zoom, 0);
+                        }
                     }
                     clicked = false;
                 }

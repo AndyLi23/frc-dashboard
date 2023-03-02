@@ -61,8 +61,6 @@ public class TextDisplay extends Display implements Serializable {
         this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         this.add(nameLabel);
         this.add(valueLabel);
-
-        updateResizeBounds();
     }
 
     @Override

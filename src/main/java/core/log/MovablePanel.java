@@ -32,6 +32,8 @@ public class MovablePanel extends JPanel implements Serializable {
         this.x = x;
         this.y = y;
 
+        updateResizeBounds();
+
         popup = new JPopupMenu();
         JMenuItem remove = new JMenuItem("Remove");
         remove.addActionListener(e -> getParent().getParent().getParent().getParent().remove(this));
@@ -79,6 +81,8 @@ public class MovablePanel extends JPanel implements Serializable {
 
                     bounds = getBounds();
 
+                    updateResizeBounds();
+
                     switch (cursor) {
                         case Cursor.MOVE_CURSOR: {
                             stored.x += offsetX;
@@ -120,9 +124,6 @@ public class MovablePanel extends JPanel implements Serializable {
                     }
 
                     setBounds(bounds);
-
-                    cornerDist = Math.max(6, Math.min(14, bounds.height / 3));
-                    edgeDist = Math.max(4, Math.min(12, bounds.height / 4));
 
                     setNewLoc(bounds.x, bounds.y);
 
@@ -222,6 +223,7 @@ public class MovablePanel extends JPanel implements Serializable {
     }
 
     public int getCursor(MouseEvent me) {
+        System.out.println(cornerDist + " " + edgeDist);
         for (int i = 0; i < locations.length; i++) {
             Rectangle rect = getRectangle(me.getComponent().getWidth(), me.getComponent().getHeight(), locations[i]);
             if (rect.contains(me.getPoint())) return cursors[i];

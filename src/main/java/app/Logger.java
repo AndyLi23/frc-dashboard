@@ -69,6 +69,8 @@ public class Logger extends Window {
 
         table = nt.getTable("dashboard");
 
+        initiateNT();
+
         for(int i = 0; i < 10; ++i) {
             panels.put("Testing " + i, new TextDisplay("Testing " + i, 0, i*30,this));
         }
@@ -117,14 +119,12 @@ public class Logger extends Window {
     }
 
     public void updateValue(String key, NetworkTableValue value) {
-        if (panels.containsKey(key)) {
-            panels.get(key).updateValue(value);
-        } else {
+        if (!panels.containsKey(key)) {
             panels.put(key, new TextDisplay(key, 0, 0, this));
             display.add(panels.get(key));
             panels.get(key).place();
-            panels.get(key).updateValue(value);
         }
+        panels.get(key).updateValue(value);
     }
 
     public void replace(Component c, DisplayType type) {

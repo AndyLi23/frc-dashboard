@@ -13,11 +13,15 @@ public class Graph extends JPanel {
     private int sh, sw;
     private double wr, hr, tcur;
     private double[] horizontalRange, verticalRange;
+    private final int bottom = 14;
 
     public Graph() {
         super();
 
         setBackground(new Color(255, 255, 255));
+
+        sw = getWidth();
+        sh = getHeight() - bottom;
     }
 
     @Override
@@ -29,6 +33,9 @@ public class Graph extends JPanel {
         ArrayList<Pair> data = parent.getStored();
         int linesH = parent.getApproxGridLinesH();
         int linesV = parent.getApproxGridLinesV();
+
+        sw = getWidth();
+        sh = getHeight() - bottom;
 
         if(data.size() > 0) {
 
@@ -78,10 +85,6 @@ public class Graph extends JPanel {
             Graphics2D g2d = (Graphics2D) g;
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-
-
-            sw = getWidth();
-            sh = getHeight() - 14;
 
             double cw = horizontalRange[2] - horizontalRange[0];
             double ch = verticalRange[2] - verticalRange[0];
@@ -142,7 +145,7 @@ public class Graph extends JPanel {
             }
 
             g2d.setColor(new Color(235, 235, 235));
-            g2d.fillRect(0, sh, sw, getHeight());
+            g2d.fillRect(0, sh, sw, bottom);
 
             if (horizontalRange[1] != 0) {
                 g2d.setColor(Color.BLACK);
@@ -247,7 +250,7 @@ public class Graph extends JPanel {
     }
 
     public Rectangle getGraphDim() {
-        return new Rectangle(getX(), getY(), getWidth(), getHeight() - 14);
+        return new Rectangle(getX(), getY(), sw, sh);
     }
 
     public Point screenToCanvas(Point p) {
@@ -255,11 +258,11 @@ public class Graph extends JPanel {
     }
 
     public double getGraphX(double x) {
-        return (((x - getX()) / getWidth()) * (horizontalRange[2] - horizontalRange[0]) + horizontalRange[0]);
+        return (((x - getX()) / sw) * (horizontalRange[2] - horizontalRange[0]) + horizontalRange[0]);
     }
 
     public double getGraphY(double y) {
-        return  (((getHeight() - (y - getY())) / getHeight()) * (verticalRange[2] - verticalRange[0]) + verticalRange[0]);
+        return  (((sh - (y - getY())) / sh) * (verticalRange[2] - verticalRange[0]) + verticalRange[0]);
     }
 
     public double getT_cur() {
