@@ -18,12 +18,14 @@ public class GraphDisplay extends Display implements Serializable {
     private final int textSize = 14;
     private final Dimension minimumSize = new Dimension(400, 300);
     private double t_left = 0, t_right = 0, y_left = 0, y_right = 0, t_cur = 0;
-    private final double t_max = 120;
+    private double t_max = 30;
     private final int approxGridLinesH = 4;
     private final int approxGridLinesV = 6;
     private boolean zoomed = false, clicked = false;
-    private JLabel name;
+    private final JLabel name;
+    private final JMenu resize;
     private Point start, end;
+    private final int[] t_steps = new int[]{5, 10, 15, 20, 30, 45, 60, 120};
 
     public GraphDisplay(String name, Logger parent) {
         this(name, 0, 0, Logger.getTypes(), parent, null);
@@ -42,13 +44,17 @@ public class GraphDisplay extends Display implements Serializable {
 
         this.setLayout(null);
 
-        JMenuItem zoom = new JMenuItem("Zoom Out");
-        zoom.addActionListener(e -> zoomed = false);
-        popup.add(zoom);
+        resize = new JMenu("Set Max Range");
+        for (int d : t_steps) {
+            JMenuItem temp = new JMenuItem(String.valueOf(d));
+            temp.addActionListener(e -> t_max = d);
+            resize.add(temp);
+        }
+        popup.add(resize, 0);
 
         JMenuItem text = new JMenuItem("Change to Text");
         text.addActionListener(e -> parentLogger.replace(this, Logger.DisplayType.kTextDisplay));
-        popup.add(text);
+        popup.add(text, 1);
 
         graph = new Graph();
         this.name = new JLabel(name, SwingConstants.CENTER);
@@ -81,14 +87,17 @@ public class GraphDisplay extends Display implements Serializable {
             @Override
             public void mouseDragged(MouseEvent e) {
                 end = e.getPoint();
-                requestFocus();
+                end.x = Math.max(graph.getX(), Math.min(end.x, graph.getX() + graph.getWidth()));
+                end.y = Math.max(graph.getY(), Math.min(end.y, graph.getY() + graph.getHeight() - 14));
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
                 if(e.getButton() == MouseEvent.BUTTON1) {
-                    if (getCursor(e) == Cursor.CROSSHAIR_CURSOR && !(start.x == end.x || start.y == end.y)) {
+                    if (!(start.x == end.x || start.y == end.y)) {
                         end = e.getPoint();
+                        end.x = Math.max(graph.getX(), Math.min(end.x, graph.getX() + graph.getWidth()));
+                        end.y = Math.max(graph.getY(), Math.min(end.y, graph.getY() + graph.getHeight() - 14));
 
                         t_left = Math.min(graph.getGraphX(start.x), graph.getGraphX(end.x));
                         t_right = Math.max(graph.getGraphX(start.x), graph.getGraphX(end.x));
@@ -97,6 +106,12 @@ public class GraphDisplay extends Display implements Serializable {
                         t_cur = graph.getT_cur();
 
                         zoomed = true;
+
+                        popup.remove(resize);
+
+                        JMenuItem zoom = new JMenuItem("Zoom Out");
+                        zoom.addActionListener(a -> zoomOut());
+                        popup.add(zoom, 0);
                     }
                     clicked = false;
                 }
@@ -160,6 +175,12 @@ public class GraphDisplay extends Display implements Serializable {
         return t_max;
     }
 
+    public void zoomOut() {
+        zoomed = false;
+        popup.remove(0);
+        popup.add(resize, 0);
+    }
+
     public int getApproxGridLinesH() {
         return approxGridLinesH;
     }
@@ -195,6 +216,6 @@ public class GraphDisplay extends Display implements Serializable {
     @Override
     public void updateResizeBounds() {
         cornerDist = Math.max(6, Math.min(10, getBounds().height / 3));
-        edgeDist = Math.max(4, Math.min(8, getBounds().height / 4));
+        edgeDist = Math.max(4, Math.min(6, getBounds().height / 4));
     }
 }

@@ -53,7 +53,9 @@ public class MovablePanel extends JPanel implements Serializable {
                         stored = getBounds();
                         cursor = getCursor(e);
                     }
-                } else if (e.getButton() == MouseEvent.BUTTON3) {
+                }
+
+                if (e.getButton() == MouseEvent.BUTTON3) {
                     initializeRightClick(e);
                 } else {
                     cancelRightClick();
@@ -67,7 +69,7 @@ public class MovablePanel extends JPanel implements Serializable {
 
             @Override
             public void mouseDragged(MouseEvent e) {
-                if(cursor != Cursor.CROSSHAIR_CURSOR && e.getButton() == MouseEvent.BUTTON1) {
+                if(cursor != Cursor.CROSSHAIR_CURSOR && !rMenu) {
                     Point point = e.getLocationOnScreen();
                     offsetX = point.x - lastPoint.x;
                     offsetY = point.y - lastPoint.y;
@@ -196,6 +198,15 @@ public class MovablePanel extends JPanel implements Serializable {
         this.y = y;
     }
 
+    public void bound() {
+        Rectangle bounds = getBounds();
+
+        bounds.x = Math.max(0, Math.min(bounds.x, getParent().getWidth() - bounds.width));
+        bounds.y = Math.max(0, Math.min(bounds.y, getParent().getHeight() - bounds.height));
+
+        setBounds(bounds);
+    }
+
     private Rectangle getRectangle(int w, int h, int location) {
         switch (location) {
             case SwingConstants.NORTH: return new Rectangle(cornerDist, 0, w - 2*cornerDist, edgeDist);
@@ -213,7 +224,7 @@ public class MovablePanel extends JPanel implements Serializable {
     public int getCursor(MouseEvent me) {
         for (int i = 0; i < locations.length; i++) {
             Rectangle rect = getRectangle(me.getComponent().getWidth(), me.getComponent().getHeight(), locations[i]);
-            if (rect != null && rect.contains(me.getPoint())) return cursors[i];
+            if (rect.contains(me.getPoint())) return cursors[i];
         }
         return Cursor.MOVE_CURSOR;
     }

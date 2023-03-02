@@ -38,7 +38,7 @@ public class TextDisplay extends Display implements Serializable {
         if (types.contains(Logger.DisplayType.kGraphDisplay)) {
             JMenuItem graph = new JMenuItem("Change to Graph");
             graph.addActionListener(e -> parentLogger.replace(this, Logger.DisplayType.kGraphDisplay));
-            popup.add(graph);
+            popup.add(graph, 0);
         }
 
         nameLabel = new JLabel(name);
