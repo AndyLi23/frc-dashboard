@@ -41,7 +41,7 @@ public class Graph extends JPanel {
 
             double tmax, tmin, timeRange;
 
-            double actualTime = data.get(data.size() - 1).getKey() / 1000.;
+            double actualTime = data.get(data.size() - 1).getKey() / 1000000.;
 
 
             if (parent.getZoomed()) {
@@ -53,7 +53,7 @@ public class Graph extends JPanel {
                 tcur = actualTime;
 
                 timeRange = Math.min(parent.getT_max(),
-                        tcur - data.get(0).getKey() / 1000.);
+                        tcur - data.get(0).getKey() / 1000000.);
 
                 tmax = 0;
                 tmin = -timeRange;
@@ -65,11 +65,11 @@ public class Graph extends JPanel {
 
             int left_index, right_index;
             if (parent.getZoomed()) {
-                left_index = search(data, (tcur + horizontalRange[0]) * 1000, false);
-                right_index = search(data, (tcur + horizontalRange[2]) * 1000, true);
+                left_index = search(data, (tcur + horizontalRange[0]) * 1000000, false);
+                right_index = search(data, (tcur + horizontalRange[2]) * 1000000, true);
             } else {
-                left_index = search(data, (tcur + tmin) * 1000, true);
-                right_index = search(data, (tcur + tmax) * 1000, true);
+                left_index = search(data, (tcur + tmin) * 1000000, true);
+                right_index = search(data, (tcur + tmax) * 1000000, true);
             }
 
             double[] vRange;
@@ -116,14 +116,14 @@ public class Graph extends JPanel {
 
             if (left_index != -1 && right_index != -1) {
 
-                if ((data.get(left_index).getKey() / 1000. - tcur) >= horizontalRange[0]) {
-                    int datax = getScreenX(data.get(left_index).getKey() / 1000. - tcur);
+                if ((data.get(left_index).getKey() / 1000000. - tcur) >= horizontalRange[0]) {
+                    int datax = getScreenX(data.get(left_index).getKey() / 1000000. - tcur);
                     int datay = getScreenY(0);
                     g2d.drawLine(0, datay, datax, datay);
                 }
 
                 for (int ind = left_index; ind <= right_index; ++ind) {
-                    int datax = getScreenX(data.get(ind).getKey() / 1000. - tcur);
+                    int datax = getScreenX(data.get(ind).getKey() / 1000000. - tcur);
                     int datay = getScreenY(Double.parseDouble(data.get(ind).getValue()));
                     if (prevx != -1) {
                         g2d.drawLine(prevx, prevy, datax, datay);

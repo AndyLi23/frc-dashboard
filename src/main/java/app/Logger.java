@@ -50,6 +50,7 @@ public class Logger extends Window {
                 loads.add(c.getName().substring(0, c.getName().length() - 4));
             }
         }
+        loads.add("None");
 
         Object[] pos = loads.toArray();
         String s = (String)JOptionPane.showInputDialog(
@@ -88,7 +89,7 @@ public class Logger extends Window {
 
         HashMap<String, Display> pn;
 
-        if ((s != null) && (s.length() > 0)) {
+        if ((s != null) && (s.length() > 0) && !s.equals("None")) {
             System.out.println("Loading file " + s + ".txt");
 
             try {
@@ -99,17 +100,11 @@ public class Logger extends Window {
                 System.out.println("Loading failed: " + e.getMessage());
 
                 pn = new HashMap<>();
-                for(int i = 0; i < 10; ++i) {
-                    pn.put("Testing " + i, new TextDisplay("Testing " + i, 0, i*30));
-                }
             }
         } else {
             System.out.println("Not loading");
 
             pn = new HashMap<>();
-            for(int i = 0; i < 10; ++i) {
-                pn.put("Testing " + i, new TextDisplay("Testing " + i, 0, i*30));
-            }
         }
 
         for (Display d : pn.values()) {
@@ -133,13 +128,13 @@ public class Logger extends Window {
         long time = System.currentTimeMillis();
         
         // TESTING
-        for (Display d : panels.values()) {
+//        for (Display d : panels.values()) {
 //            if(Math.random() <= 0.001) {
 //                d.updateValue("Oh no a string");
 //            } else {
-                d.updateValue(System.currentTimeMillis(), ((int) (Math.random() * 3) - 1) * (int) (Math.random() * Math.pow(10, (int) (Math.random() * 5))));
+//                d.updateValue(System.currentTimeMillis(), ((int) (Math.random() * 3) - 1) * (int) (Math.random() * Math.pow(10, (int) (Math.random() * 5))));
 //            }
-        }
+//        }
 
         for (Component c : getComponents()) c.repaint();
 
