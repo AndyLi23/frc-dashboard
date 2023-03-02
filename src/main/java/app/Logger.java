@@ -11,10 +11,11 @@ import edu.wpi.first.networktables.NetworkTableValue;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -25,6 +26,7 @@ public class Logger extends Window {
     private final NetworkTable table;
     private final HashMap<String, Display> panels;
     private long startTime = -1;
+    private long lastTime = -1;
     private final JPanel display, bar;
     private final int barHeight = 50;
 
@@ -41,7 +43,23 @@ public class Logger extends Window {
         // TESTING
         super("Logger", false, new Dimension(500, 300), new Dimension(800, 500), new Color(200, 200, 200));
 
-//        super("Logger", true, new Dimension(500, 300), new Dimension());
+        ArrayList<String> loads = new ArrayList<>();
+        File f = new File("res/stored/");
+        if (f.isDirectory()) {
+            for (File c : f.listFiles()) {
+                loads.add(c.getName().substring(0, c.getName().length() - 4));
+            }
+        }
+
+        Object[] pos = loads.toArray();
+        String s = (String)JOptionPane.showInputDialog(
+                this,
+                "Load saved format: ",
+                "Load Format",
+                JOptionPane.PLAIN_MESSAGE,
+                null,
+                pos,
+                pos[0]);
 
         this.setLayout(new BorderLayout());
 
@@ -70,12 +88,23 @@ public class Logger extends Window {
 
         HashMap<String, Display> pn;
 
-        try {
-            ObjectInputStream in = new ObjectInputStream(new FileInputStream("res/stored/panels.txt"));
-            pn = (HashMap<String, Display>) in.readObject();
-            in.close();
-        } catch (Exception e) {
-            System.out.println("Loading failed: " + e.getMessage());
+        if ((s != null) && (s.length() > 0)) {
+            System.out.println("Loading file " + s + ".txt");
+
+            try {
+                ObjectInputStream in = new ObjectInputStream(new FileInputStream("res/stored/" + s + ".txt"));
+                pn = (HashMap<String, Display>) in.readObject();
+                in.close();
+            } catch (Exception e) {
+                System.out.println("Loading failed: " + e.getMessage());
+
+                pn = new HashMap<>();
+                for(int i = 0; i < 10; ++i) {
+                    pn.put("Testing " + i, new TextDisplay("Testing " + i, 0, i*30));
+                }
+            }
+        } else {
+            System.out.println("Not loading");
 
             pn = new HashMap<>();
             for(int i = 0; i < 10; ++i) {
@@ -85,7 +114,6 @@ public class Logger extends Window {
 
         for (Display d : pn.values()) {
             display.add(d);
-            d.place();
             d.load();
             if(d.getStored().size() > 0) startTime = (startTime == -1 ? d.getStored().get(0).getKey() :
                     Math.min(startTime, d.getStored().get(0).getKey()));
@@ -137,6 +165,8 @@ public class Logger extends Window {
             panels.get(key).place();
         }
         panels.get(key).updateValue(value.getTime(), value.getValue());
+
+        lastTime = Math.max(lastTime, value.getTime());
     }
 
     public void replace(Component c, DisplayType type) {
@@ -159,22 +189,48 @@ public class Logger extends Window {
             loopTimer.stop();
 
 
+            final JOptionPane optionPane = new JOptionPane("Save format as: ",
+                    JOptionPane.QUESTION_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
 
-            
+            optionPane.setWantsInput(true);
+            optionPane.setSelectionValues(null);
+            optionPane.setInitialSelectionValue("panel1");
 
+            final JDialog dialog = new JDialog(this, "Save", true);
+            dialog.setContentPane(optionPane);
 
+            optionPane.addPropertyChangeListener(
+                    e -> {
+                        String prop = e.getPropertyName();
 
+                        if (dialog.isVisible() && (e.getSource() == optionPane) && (prop.equals(JOptionPane.VALUE_PROPERTY))) {
+                            if ((optionPane.getInputValue() != null && ((String) optionPane.getInputValue()).length() > 0)
+                                    || optionPane.getValue().equals(JOptionPane.CANCEL_OPTION)) {
+                                dialog.setVisible(false);
+                            } else {
+                                optionPane.setMessage("Save format as: \n(Invalid input)");
+                                optionPane.setValue(JOptionPane.UNINITIALIZED_VALUE);
+                            }
+                        }
+                    });
+            dialog.pack();
+            dialog.setVisible(true);
 
-
-
-            //Creating the object
-            //Creating stream and writing the object
-            ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("res/stored/panels.txt"));
-            out.writeObject(panels);
-            out.flush();
-            //closing the stream
-            out.close();
-//            System.out.println("success");
+            if (!optionPane.getValue().equals(JOptionPane.UNINITIALIZED_VALUE)) {
+                int value = (Integer) optionPane.getValue();
+                if (value == JOptionPane.OK_OPTION) {
+                    String file = String.valueOf(optionPane.getInputValue());
+                    System.out.println("Saving as " + file + ".txt");
+                    ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("res/stored/" + file + ".txt"));
+                    out.writeObject(panels);
+                    out.flush();
+                    out.close();
+                } else {
+                    System.out.println("Saving cancelled");
+                }
+            } else {
+                System.out.println("Saving cancelled");
+            }
 
         } catch (Exception e) {
             System.out.println(e.getMessage());
