@@ -1,5 +1,7 @@
 package core.log;
 
+import app.Logger;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -25,19 +27,28 @@ public class MovablePanel extends JPanel implements Serializable {
     protected int cornerDist, edgeDist;
     protected boolean rMenu = false;
 
-    protected final JPopupMenu popup;
+    protected JPopupMenu popup;
 
     public MovablePanel(int x, int y) {
         this.self = this;
         this.x = x;
         this.y = y;
+    }
 
-        updateResizeBounds();
+    public void load() {
+        loadListeners();
+        loadPopup();
+    }
 
+    public void loadPopup() {
         popup = new JPopupMenu();
         JMenuItem remove = new JMenuItem("Remove");
         remove.addActionListener(e -> getParent().getParent().getParent().getParent().remove(this));
         popup.add(remove);
+    }
+
+    public void loadListeners() {
+        updateResizeBounds();
 
         MouseAdapter mouseAdapter = new MouseAdapter() {
             private Point lastPoint;
@@ -223,7 +234,6 @@ public class MovablePanel extends JPanel implements Serializable {
     }
 
     public int getCursor(MouseEvent me) {
-        System.out.println(cornerDist + " " + edgeDist);
         for (int i = 0; i < locations.length; i++) {
             Rectangle rect = getRectangle(me.getComponent().getWidth(), me.getComponent().getHeight(), locations[i]);
             if (rect.contains(me.getPoint())) return cursors[i];

@@ -9,7 +9,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class GraphDisplay extends Display implements Serializable {
 
@@ -24,38 +23,26 @@ public class GraphDisplay extends Display implements Serializable {
     private final int approxGridLinesV = 6;
     private boolean zoomed = false, clicked = false;
     private final JLabel name;
-    private final JMenu resize;
+    private JMenu resize;
     private Point start, end;
     private final int[] t_steps = new int[]{5, 10, 15, 20, 30, 45, 60, 120};
 
-    public GraphDisplay(String name, Logger parent) {
-        this(name, 0, 0, Logger.getTypes(), parent, null);
+    public GraphDisplay(String name) {
+        this(name, 0, 0, Logger.getTypes(), null);
     }
 
     public GraphDisplay(TextDisplay t) {
-        this(t.getName(), t.getX(), t.getY(), t.getTypes(), t.getParentLogger(), t.getStored());
+        this(t.getName(), t.getX(), t.getY(), t.getTypes(), t.getStored());
     }
 
-    public GraphDisplay(String name, int x, int y, Logger parent) {
-        this(name, x, y, Logger.getTypes(), parent, null);
+    public GraphDisplay(String name, int x, int y) {
+        this(name, x, y, Logger.getTypes(), null);
     }
 
-    public GraphDisplay(String name, int x, int y, ArrayList<Logger.DisplayType> types, Logger parent, ArrayList<Pair> stored) {
-        super(name, x, y, types, parent, stored);
+    public GraphDisplay(String name, int x, int y, ArrayList<Logger.DisplayType> types, ArrayList<Pair> stored) {
+        super(name, x, y, types, stored);
 
         this.setLayout(null);
-
-        resize = new JMenu("Set Max Range");
-        for (int d : t_steps) {
-            JMenuItem temp = new JMenuItem(String.valueOf(d));
-            temp.addActionListener(e -> t_max = d);
-            resize.add(temp);
-        }
-        popup.add(resize, 0);
-
-        JMenuItem text = new JMenuItem("Change to Text");
-        text.addActionListener(e -> parentLogger.replace(this, Logger.DisplayType.kTextDisplay));
-        popup.add(text, 1);
 
         graph = new Graph();
         this.name = new JLabel(name, SwingConstants.CENTER);
@@ -70,6 +57,37 @@ public class GraphDisplay extends Display implements Serializable {
         this.name.setFont(new Font(Font.SANS_SERIF, Font.BOLD, textSize));
 
         setBackground(new Color(235, 235, 235));
+
+        load();
+    }
+
+    @Override
+    public void loadPopup() {
+        super.loadPopup();
+
+        if (zoomed) {
+            JMenuItem zoom = new JMenuItem("Zoom Out");
+            zoom.addActionListener(a -> zoomOut());
+            popup.add(zoom, 0);
+        } else {
+            resize = new JMenu("Set Max Range");
+            for (int d : t_steps) {
+                JMenuItem temp = new JMenuItem(String.valueOf(d));
+                temp.addActionListener(e -> t_max = d);
+                resize.add(temp);
+            }
+            popup.add(resize, 0);
+        }
+
+        JMenuItem text = new JMenuItem("Change to Text");
+        text.addActionListener(e -> ((Logger) getParent().getParent().getParent().getParent().getParent()).replace(
+                this, Logger.DisplayType.kTextDisplay));
+        popup.add(text, 1);
+    }
+
+    @Override
+    public void loadListeners() {
+        super.loadListeners();
 
         MouseAdapter mouseAdapter = new MouseAdapter() {
             @Override
@@ -196,11 +214,10 @@ public class GraphDisplay extends Display implements Serializable {
     }
 
     @Override
-    public void updateValue(Object value) {
-        super.updateValue(value);
+    public void updateValue(Long time, Object value) {
+        super.updateValue(time, value);
         resize();
 //        repaint();
-
     }
 
     public int getCursor(MouseEvent me) {

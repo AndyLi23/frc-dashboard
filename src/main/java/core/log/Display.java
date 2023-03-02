@@ -2,6 +2,7 @@ package core.log;
 
 import app.Logger;
 import core.util.Pair;
+import edu.wpi.first.networktables.NetworkTableValue;
 
 import java.awt.*;
 import java.io.Serializable;
@@ -13,27 +14,25 @@ public class Display extends MovablePanel implements Serializable {
 
     protected ArrayList<Pair> stored;
     protected final int maxStoredSize = 20000;
-    protected Logger parentLogger;
 
-    public Display(String name, int x, int y, Logger parent, ArrayList<Pair> stored) {
-        this(name, x, y, Logger.getTypes(), parent, stored);
+    public Display(String name, int x, int y, ArrayList<Pair> stored) {
+        this(name, x, y, Logger.getTypes(), stored);
     }
 
-    public Display(String name, int x, int y, Logger parent) {
-        this(name, x, y, parent, null);
+    public Display(String name, int x, int y) {
+        this(name, x, y, null);
     }
 
-    public Display(String name, int x, int y, ArrayList<Logger.DisplayType> types, Logger parent, ArrayList<Pair> stored) {
+    public Display(String name, int x, int y, ArrayList<Logger.DisplayType> types, ArrayList<Pair> stored) {
         super(x, y);
         this.name = name;
         this.types = types;
-        this.parentLogger = parent;
 
         this.stored = stored == null ? new ArrayList<>() : stored;
     }
 
-    public void updateValue(Object value) {
-        stored.add(new Pair(System.currentTimeMillis(), String.valueOf(value)));
+    public void updateValue(Long time, Object value) {
+        stored.add(new Pair(time, String.valueOf(value)));
         if (stored.size() > maxStoredSize) stored.remove(0);
         checkType(value);
     }
@@ -59,12 +58,8 @@ public class Display extends MovablePanel implements Serializable {
         if (this instanceof TextDisplay) {
             if(popup.getComponentCount() > 1) popup.remove(1);
         } else if (this instanceof GraphDisplay) {
-            parentLogger.replace(this, Logger.DisplayType.kTextDisplay);
+            ((Logger) getParent().getParent().getParent().getParent().getParent()).replace(this, Logger.DisplayType.kTextDisplay);
         }
-    }
-
-    public Logger getParentLogger() {
-        return parentLogger;
     }
 
     public ArrayList<Pair> getStored() {

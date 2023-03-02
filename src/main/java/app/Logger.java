@@ -4,7 +4,6 @@ import core.Window;
 import core.log.Display;
 import core.log.GraphDisplay;
 import core.log.TextDisplay;
-import core.util.Pair;
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -16,18 +15,16 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Map;
 
 public class Logger extends Window {
     private final Timer loopTimer;
     private final NetworkTableInstance nt;
     private final NetworkTable table;
-    private final HashMap<String, Display> panels = new HashMap<>();
-    private long startTime = 0;
+    private final HashMap<String, Display> panels;
+    private long startTime = -1;
     private final JPanel display, bar;
     private final int barHeight = 50;
 
@@ -71,14 +68,29 @@ public class Logger extends Window {
 
         initiateNT();
 
-        for(int i = 0; i < 10; ++i) {
-            panels.put("Testing " + i, new TextDisplay("Testing " + i, 0, i*30,this));
+        HashMap<String, Display> pn;
+
+        try {
+            ObjectInputStream in = new ObjectInputStream(new FileInputStream("res/stored/panels.txt"));
+            pn = (HashMap<String, Display>) in.readObject();
+            in.close();
+        } catch (Exception e) {
+            System.out.println("Loading failed: " + e.getMessage());
+
+            pn = new HashMap<>();
+            for(int i = 0; i < 10; ++i) {
+                pn.put("Testing " + i, new TextDisplay("Testing " + i, 0, i*30));
+            }
         }
 
-        for (Display d : panels.values()) {
+        for (Display d : pn.values()) {
             display.add(d);
             d.place();
+            d.load();
+            if(d.getStored().size() > 0) startTime = (startTime == -1 ? d.getStored().get(0).getKey() :
+                    Math.min(startTime, d.getStored().get(0).getKey()));
         }
+        panels = pn;
 
         showWindow();
 
@@ -97,7 +109,7 @@ public class Logger extends Window {
 //            if(Math.random() <= 0.001) {
 //                d.updateValue("Oh no a string");
 //            } else {
-                d.updateValue(((int) (Math.random() * 3) - 1) * (int) (Math.random() * Math.pow(10, (int) (Math.random() * 5))));
+                d.updateValue(System.currentTimeMillis(), ((int) (Math.random() * 3) - 1) * (int) (Math.random() * Math.pow(10, (int) (Math.random() * 5))));
 //            }
         }
 
@@ -120,11 +132,11 @@ public class Logger extends Window {
 
     public void updateValue(String key, NetworkTableValue value) {
         if (!panels.containsKey(key)) {
-            panels.put(key, new TextDisplay(key, 0, 0, this));
+            panels.put(key, new TextDisplay(key, 0, 0));
             display.add(panels.get(key));
             panels.get(key).place();
         }
-        panels.get(key).updateValue(value);
+        panels.get(key).updateValue(value.getTime(), value.getValue());
     }
 
     public void replace(Component c, DisplayType type) {
@@ -146,23 +158,23 @@ public class Logger extends Window {
             nt.stopDSClient();
             loopTimer.stop();
 
+
+
+            
+
+
+
+
+
+
             //Creating the object
             //Creating stream and writing the object
-            ObjectOutputStream out=new ObjectOutputStream(new FileOutputStream("res/stored/panels.txt"));
+            ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("res/stored/panels.txt"));
             out.writeObject(panels);
             out.flush();
             //closing the stream
             out.close();
 //            System.out.println("success");
-
-            ObjectInputStream in=new ObjectInputStream(new FileInputStream("res/stored/panels.txt"));
-            HashMap<String, Display> r= (HashMap<String, Display>) in.readObject();
-            //printing the data of the serialized object
-//            System.out.println(r);
-            //closing the stream
-            in.close();
-
-
 
         } catch (Exception e) {
             System.out.println(e.getMessage());

@@ -20,26 +20,20 @@ public class TextDisplay extends Display implements Serializable {
 
     private int maxWidth;
 
-    public TextDisplay(String name, Logger parent) {
-        this(name, 0, 0, Logger.getTypes(), parent, null);
+    public TextDisplay(String name) {
+        this(name, 0, 0, Logger.getTypes(), null);
     }
 
     public TextDisplay(GraphDisplay t) {
-        this(t.getName(), t.getX(), t.getY(), t.getTypes(), t.getParentLogger(), t.getStored());
+        this(t.getName(), t.getX(), t.getY(), t.getTypes(), t.getStored());
     }
 
-    public TextDisplay(String name, int x, int y, Logger parent) {
-        this(name, x, y, Logger.getTypes(), parent, null);
+    public TextDisplay(String name, int x, int y) {
+        this(name, x, y, Logger.getTypes(), null);
     }
 
-    public TextDisplay(String name, int x, int y, ArrayList<Logger.DisplayType> types, Logger parent, ArrayList<Pair> stored) {
-        super(name, x, y, types, parent, stored);
-
-        if (types.contains(Logger.DisplayType.kGraphDisplay)) {
-            JMenuItem graph = new JMenuItem("Change to Graph");
-            graph.addActionListener(e -> parentLogger.replace(this, Logger.DisplayType.kGraphDisplay));
-            popup.add(graph, 0);
-        }
+    public TextDisplay(String name, int x, int y, ArrayList<Logger.DisplayType> types, ArrayList<Pair> stored) {
+        super(name, x, y, types, stored);
 
         nameLabel = new JLabel(name);
         valueLabel = new JLabel(stored == null ? "" : stored.get(stored.size() - 1).getValue());
@@ -61,6 +55,20 @@ public class TextDisplay extends Display implements Serializable {
         this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         this.add(nameLabel);
         this.add(valueLabel);
+
+        load();
+    }
+
+    @Override
+    public void loadPopup() {
+        super.loadPopup();
+
+        if (types.contains(Logger.DisplayType.kGraphDisplay)) {
+            JMenuItem graph = new JMenuItem("Change to Graph");
+            graph.addActionListener(e -> ((Logger) getParent().getParent().getParent().getParent().getParent()).replace(
+                    this, Logger.DisplayType.kGraphDisplay));
+            popup.add(graph, 0);
+        }
     }
 
     @Override
@@ -76,8 +84,8 @@ public class TextDisplay extends Display implements Serializable {
     }
 
     @Override
-    public void updateValue(Object value) {
-        super.updateValue(value);
+    public void updateValue(Long time, Object value) {
+        super.updateValue(time, value);
         if((String.valueOf(value)).contains("\n")) valueLabel.setText("<html>" + (String.valueOf(value)).replace("\n", "<br>") + "</html>");
         else valueLabel.setText(String.valueOf(value));
         resize();
