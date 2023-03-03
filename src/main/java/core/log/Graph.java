@@ -1,6 +1,7 @@
 package core.log;
 
 import core.util.Pair;
+import core.util.Util;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,6 +15,7 @@ public class Graph extends JPanel {
     private double wr, hr, tcur;
     private double[] horizontalRange, verticalRange;
     private final int bottom = 14;
+    private final double timeRatio = 1000000;
 
     public Graph() {
         super();
@@ -41,7 +43,7 @@ public class Graph extends JPanel {
 
             double tmax, tmin, timeRange;
 
-            double actualTime = data.get(data.size() - 1).getKey() / 1000000.;
+            double actualTime = parent.getEndTime();
 
 
             if (parent.getZoomed()) {
@@ -52,8 +54,8 @@ public class Graph extends JPanel {
             } else {
                 tcur = actualTime;
 
-                timeRange = Math.min(parent.getT_max(),
-                        tcur - data.get(0).getKey() / 1000000.);
+                timeRange = Math.min(parent.getT_max() * timeRatio,
+                        tcur - parent.getStartTime());
 
                 tmax = 0;
                 tmin = -timeRange;
@@ -65,11 +67,11 @@ public class Graph extends JPanel {
 
             int left_index, right_index;
             if (parent.getZoomed()) {
-                left_index = search(data, (tcur + horizontalRange[0]) * 1000000, false);
-                right_index = search(data, (tcur + horizontalRange[2]) * 1000000, true);
+                left_index = Util.search(data, (tcur + horizontalRange[0]), false);
+                right_index = Util.search(data, (tcur + horizontalRange[2]), true);
             } else {
-                left_index = search(data, (tcur + tmin) * 1000000, true);
-                right_index = search(data, (tcur + tmax) * 1000000, true);
+                left_index = Util.search(data, (tcur + tmin), true);
+                right_index = Util.search(data, (tcur + tmax), true);
             }
 
             double[] vRange;
@@ -116,14 +118,8 @@ public class Graph extends JPanel {
 
             if (left_index != -1 && right_index != -1) {
 
-                if ((data.get(left_index).getKey() / 1000000. - tcur) >= horizontalRange[0]) {
-                    int datax = getScreenX(data.get(left_index).getKey() / 1000000. - tcur);
-                    int datay = getScreenY(0);
-                    g2d.drawLine(0, datay, datax, datay);
-                }
-
-                for (int ind = left_index; ind <= right_index; ++ind) {
-                    int datax = getScreenX(data.get(ind).getKey() / 1000000. - tcur);
+                for (int ind = left_index; ind < right_index; ++ind) {
+                    int datax = getScreenX(data.get(ind).getKey() - tcur);
                     int datay = getScreenY(Double.parseDouble(data.get(ind).getValue()));
                     if (prevx != -1) {
                         g2d.drawLine(prevx, prevy, datax, datay);
@@ -151,8 +147,8 @@ public class Graph extends JPanel {
                 g2d.setColor(Color.BLACK);
 
                 for (double l = horizontalRange[0]; l <= horizontalRange[2] + (horizontalRange[1] / 2); l += horizontalRange[1]) {
-                    String pr = String.valueOf(l - (actualTime - tcur));
-                    if (pr.length() > 6) pr = String.format("%.2f", l - (actualTime - tcur));
+                    String pr = String.valueOf((l - (actualTime - tcur)) / timeRatio);
+                    if (pr.length() > 6) pr = String.format("%.2f", (l - (actualTime - tcur)) / timeRatio);
                     int tw = (int) Math.ceil(g2d.getFont().getStringBounds(pr, g2d.getFontRenderContext()).getWidth());
                     if (getScreenX(l) < 2) g2d.drawString(pr, 0, getHeight() - 2);
                     else if (getScreenX(l) == sw - 1) g2d.drawString(pr, sw - tw, getHeight() - 2);
@@ -219,32 +215,6 @@ public class Graph extends JPanel {
         for(int i = minR; i <= highR; ++i) {
             ans[0] = Math.min(ans[0], Double.parseDouble((array.get(i).getValue())));
             ans[1] = Math.max(ans[1], Double.parseDouble((array.get(i).getValue())));
-        }
-        return ans;
-    }
-
-    public int search(ArrayList<Pair> array, double value, boolean greater) {
-        int start = 0, end = array.size() - 1;
-
-        int ans = -1;
-        while (start <= end) {
-            int mid = (start + end) / 2;
-
-            if (greater) {
-                if (array.get(mid).getKey() < value) {
-                    start = mid + 1;
-                } else {
-                    ans = mid;
-                    end = mid - 1;
-                }
-            } else {
-                if (array.get(mid).getKey() > value) {
-                    end = mid - 1;
-                } else {
-                    ans = mid;
-                    start = mid + 1;
-                }
-            }
         }
         return ans;
     }

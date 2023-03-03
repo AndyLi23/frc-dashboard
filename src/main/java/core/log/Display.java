@@ -58,7 +58,7 @@ public class Display extends MovablePanel implements Serializable {
         if (this instanceof TextDisplay) {
             if(popup.getComponentCount() > 1) popup.remove(1);
         } else if (this instanceof GraphDisplay) {
-            ((Logger) getParent().getParent().getParent().getParent().getParent()).replace(this, Logger.DisplayType.kTextDisplay);
+            getLoggerParent().replace(this, Logger.DisplayType.kTextDisplay);
         }
     }
 
@@ -76,6 +76,11 @@ public class Display extends MovablePanel implements Serializable {
         r.height = Math.max(r.height, (int) getPreferredSize().getHeight());
         this.setBounds(r);
     }
+    
+    public Logger getLoggerParent() {
+//        System.out.println(getParent());
+        return ((Logger) getParent().getParent().getParent().getParent().getParent());
+    }
 
     @Override
     public String getName() {
@@ -84,5 +89,9 @@ public class Display extends MovablePanel implements Serializable {
 
     public ArrayList<Logger.DisplayType> getTypes() {
         return types;
+    }
+
+    public void update() {
+
     }
 }

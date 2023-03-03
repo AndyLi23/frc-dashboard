@@ -97,7 +97,7 @@ public class Logger extends Window {
                 pn = (HashMap<String, Display>) in.readObject();
                 in.close();
             } catch (Exception e) {
-                System.out.println("Loading failed: " + e.getMessage());
+//                System.out.println("Loading failed: " + e.getMessage());
 
                 pn = new HashMap<>();
             }
@@ -105,6 +105,11 @@ public class Logger extends Window {
             System.out.println("Not loading");
 
             pn = new HashMap<>();
+
+            for (int i = 0; i < 10; ++i) {
+                pn.put("Testing " + i, new TextDisplay("Testing " + i, 10, i * 30));
+                pn.get("Testing " + i).place();
+            }
         }
 
         for (Display d : pn.values()) {
@@ -128,14 +133,20 @@ public class Logger extends Window {
         long time = System.currentTimeMillis();
         
         // TESTING
-//        for (Display d : panels.values()) {
+        for (Display d : panels.values()) {
 //            if(Math.random() <= 0.001) {
 //                d.updateValue("Oh no a string");
 //            } else {
-//                d.updateValue(System.currentTimeMillis(), ((int) (Math.random() * 3) - 1) * (int) (Math.random() * Math.pow(10, (int) (Math.random() * 5))));
+            long microtime = System.nanoTime() / 1000L;
+            d.updateValue(microtime, ((int) (Math.random() * 3) - 1) * (int) (Math.random() * Math.pow(10, (int) (Math.random() * 5))));
+            lastTime = Math.max(lastTime, microtime);
+            if (startTime == -1) startTime = microtime;
 //            }
-//        }
+        }
 
+//        System.out.println(startTime + " " + lastTime + " " + System.currentTimeMillis());
+
+        for (Display d : panels.values()) d.update();
         for (Component c : getComponents()) c.repaint();
 
 //        if(System.currentTimeMillis() - time > 1) System.out.println(System.currentTimeMillis() - time);
@@ -162,6 +173,7 @@ public class Logger extends Window {
         panels.get(key).updateValue(value.getTime(), value.getValue());
 
         lastTime = Math.max(lastTime, value.getTime());
+        if (startTime == -1) startTime = value.getTime();
     }
 
     public void replace(Component c, DisplayType type) {
@@ -174,6 +186,14 @@ public class Logger extends Window {
         panels.get(c.getName()).moveToFront();
         panels.get(c.getName()).place();
         panels.get(c.getName()).bound();
+    }
+
+    public long getStartTime() {
+        return startTime;
+    }
+
+    public long getEndTime() {
+        return lastTime;
     }
 
     @Override

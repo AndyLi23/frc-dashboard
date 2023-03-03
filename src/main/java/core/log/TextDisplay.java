@@ -2,6 +2,7 @@ package core.log;
 
 import app.Logger;
 import core.util.Pair;
+import core.util.Util;
 
 import javax.swing.*;
 import java.awt.*;
@@ -65,7 +66,7 @@ public class TextDisplay extends Display implements Serializable {
 
         if (types.contains(Logger.DisplayType.kGraphDisplay)) {
             JMenuItem graph = new JMenuItem("Change to Graph");
-            graph.addActionListener(e -> ((Logger) getParent().getParent().getParent().getParent().getParent()).replace(
+            graph.addActionListener(e -> getLoggerParent().replace(
                     this, Logger.DisplayType.kGraphDisplay));
             popup.add(graph, 0);
         }
@@ -86,10 +87,22 @@ public class TextDisplay extends Display implements Serializable {
     @Override
     public void updateValue(Long time, Object value) {
         super.updateValue(time, value);
-        if((String.valueOf(value)).contains("\n")) valueLabel.setText("<html>" + (String.valueOf(value)).replace("\n", "<br>") + "</html>");
-        else valueLabel.setText(String.valueOf(value));
-        resize();
-        resizeLabels();
+//        if((String.valueOf(value)).contains("\n")) valueLabel.setText("<html>" + (String.valueOf(value)).replace("\n", "<br>") + "</html>");
+//        else valueLabel.setText(String.valueOf(value));
+//        resize();
+//        resizeLabels();
+    }
+
+    @Override
+    public void update() {
+        if (stored != null && stored.size() > 0) {
+            long time = getLoggerParent().getEndTime();
+            String value = String.valueOf(stored.get(Util.search(stored, time, false)).getValue());
+            if (value.contains("\n")) valueLabel.setText("<html>" + value.replace("\n", "<br>") + "</html>");
+            else valueLabel.setText(value);
+            resize();
+            resizeLabels();
+        }
     }
 
     public Dimension getLabelSize(int font) {

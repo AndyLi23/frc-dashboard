@@ -80,7 +80,7 @@ public class GraphDisplay extends Display implements Serializable {
         }
 
         JMenuItem text = new JMenuItem("Change to Text");
-        text.addActionListener(e -> ((Logger) getParent().getParent().getParent().getParent().getParent()).replace(
+        text.addActionListener(e -> getLoggerParent().replace(
                 this, Logger.DisplayType.kTextDisplay));
         popup.add(text, 1);
     }
@@ -192,6 +192,14 @@ public class GraphDisplay extends Display implements Serializable {
 
     public double getT_max() {
         return t_max;
+    }
+
+    public long getStartTime() {
+        return getLoggerParent().getStartTime();
+    }
+
+    public long getEndTime() {
+        return getLoggerParent().getEndTime();
     }
 
     public void zoomOut() {
