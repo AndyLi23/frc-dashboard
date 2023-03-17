@@ -7,6 +7,7 @@ import edu.wpi.first.networktables.NetworkTableValue;
 import java.awt.*;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Display extends MovablePanel implements Serializable {
     private String name;
@@ -32,6 +33,9 @@ public class Display extends MovablePanel implements Serializable {
     }
 
     public void updateValue(Long time, Object value) {
+        if(value.getClass().isArray()) {
+            value = Arrays.toString((double[]) value);
+        }
         stored.add(new Pair(time, String.valueOf(value)));
         if (stored.size() > maxStoredSize) stored.remove(0);
         checkType(value);
@@ -56,7 +60,7 @@ public class Display extends MovablePanel implements Serializable {
     public void disableGraph() {
         types.remove(Logger.DisplayType.kGraphDisplay);
         if (this instanceof TextDisplay) {
-            if(popup.getComponentCount() > 1) popup.remove(1);
+            if(popup.getComponentCount() > 1) popup.remove(0);
         } else if (this instanceof GraphDisplay) {
             getLoggerParent().replace(this, Logger.DisplayType.kTextDisplay);
         }

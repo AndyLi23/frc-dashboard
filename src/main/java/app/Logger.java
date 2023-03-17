@@ -106,10 +106,10 @@ public class Logger extends Window {
 
             pn = new HashMap<>();
 
-            for (int i = 0; i < 10; ++i) {
-                pn.put("Testing " + i, new TextDisplay("Testing " + i, 10, i * 30));
-                pn.get("Testing " + i).place();
-            }
+//            for (int i = 0; i < 10; ++i) {
+//                pn.put("Testing " + i, new TextDisplay("Testing " + i, 10, i * 30));
+//                pn.get("Testing " + i).place();
+//            }
         }
 
         for (Display d : pn.values()) {
@@ -130,19 +130,15 @@ public class Logger extends Window {
     }
 
     public void loop() {
-        long time = System.currentTimeMillis();
-        
+//        long time = System.currentTimeMillis();
+//
         // TESTING
-        for (Display d : panels.values()) {
-//            if(Math.random() <= 0.001) {
-//                d.updateValue("Oh no a string");
-//            } else {
-            long microtime = System.nanoTime() / 1000L;
-            d.updateValue(microtime, ((int) (Math.random() * 3) - 1) * (int) (Math.random() * Math.pow(10, (int) (Math.random() * 5))));
-            lastTime = Math.max(lastTime, microtime);
-            if (startTime == -1) startTime = microtime;
-//            }
-        }
+//        for (Display d : panels.values()) {
+//            long microtime = System.nanoTime() / 1000L;
+//            d.updateValue(microtime, ((int) (Math.random() * 3) - 1) * (int) (Math.random() * Math.pow(10, (int) (Math.random() * 5))));
+//            lastTime = Math.max(lastTime, microtime);
+//            if (startTime == -1) startTime = microtime;
+//        }
 
 //        System.out.println(startTime + " " + lastTime + " " + System.currentTimeMillis());
 
