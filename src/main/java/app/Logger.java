@@ -104,10 +104,10 @@ public class Logger extends Window {
 
             pn = new HashMap<>();
 
-            for (int i = 0; i < 10; ++i) {
-                pn.put("Testing " + i, new TextDisplay("Testing " + i, 10, i * 30));
-                pn.get("Testing " + i).place();
-            }
+//            for (int i = 0; i < 10; ++i) {
+//                pn.put("Testing " + i, new TextDisplay("Testing " + i, 10, i * 30));
+//                pn.get("Testing " + i).place();
+//            }
         }
 
         for (Display d : pn.values()) {
