@@ -42,6 +42,8 @@ public class Field extends Window {
 
         }, EntryListenerFlags.kNew | EntryListenerFlags.kUpdate);
 
+        p.update(72 + 100, 42 - 21 + 66, 0, true);
+
         showWindow();
     }
 

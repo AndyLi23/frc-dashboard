@@ -118,53 +118,20 @@ public class Logger extends Window {
         }
         panels = pn;
 
-        JRadioButton b1 = new JRadioButton("Preload, Balance");
-        JRadioButton b2 = new JRadioButton("Preload, One Cone, Balance");
-        ButtonGroup group = new ButtonGroup();
-        group.add(b1);
-        group.add(b2);
+        addButtonGroup(new String[]{"Preload, Balance", "Preload, One Cone, Balance"},
+                new String[]{"preload", "one"}, "auto", 10, 50, 0);
 
-        b1.addActionListener(e -> {
-            if(b1.isSelected()) NTInstance.getInstance().getDashboardTable().getEntry("auto").setString("preload");
-        });
+        addButtonGroup(new String[]{"LEFT FIELD (Blue)", "RIGHT FIELD (Red)"},
+                new String[]{"left", "right"}, "fieldside", 10, 100, 0);
 
-        b2.addActionListener(e -> {
-            if(b2.isSelected()) NTInstance.getInstance().getDashboardTable().getEntry("auto").setString("one");
-        });
+        addButtonGroup(new String[]{"Top Tag", "Middle Tag", "Bottom Tag"},
+                new String[]{"3", "2", "1"}, "autotag", 300, 50, 2);
 
-        b1.setSelected(true);
-        NTInstance.getInstance().getDashboardTable().getEntry("auto").setString("preload");
+        addButtonGroup(new String[]{"Upper Poles", "Lower Poles"},
+                new String[]{"0", "2"}, "autoindex", 300, 120, 1);
 
-        b1.setBounds(10,50,300,20);
-        b2.setBounds(10,70,300,20);
-
-        display.add(b1);
-        display.add(b2);
-
-
-        JRadioButton f1 = new JRadioButton("LEFT FIELD (Blue)");
-        JRadioButton f2 = new JRadioButton("RIGHT FIELD (Red)");
-        ButtonGroup group2 = new ButtonGroup();
-        group2.add(f1);
-        group2.add(f2);
-
-        f1.addActionListener(e -> {
-            if(f1.isSelected()) NTInstance.getInstance().getDashboardTable().getEntry("fieldside").setString("left");
-        });
-
-        f2.addActionListener(e -> {
-            if(f2.isSelected()) NTInstance.getInstance().getDashboardTable().getEntry("fieldside").setString("right");
-        });
-
-        f1.setSelected(true);
-        NTInstance.getInstance().getDashboardTable().getEntry("fieldside").setString("left");
-
-        f1.setBounds(10,100,300,20);
-        f2.setBounds(10,120,300,20);
-
-        display.add(f1);
-        display.add(f2);
-
+        addButtonGroup(new String[]{"Balance", "Don't Balance"},
+                new String[]{"true", "false"}, "autobalance", 10, 150, 0);
 
 
         showWindow();
@@ -205,6 +172,24 @@ public class Logger extends Window {
         NTInstance.getInstance().getDashboardTable().addEntryListener((tb, key, entry, value, flags) -> {
             updateValue(key, value);
         }, EntryListenerFlags.kNew | EntryListenerFlags.kUpdate);
+    }
+
+    public void addButtonGroup(String[] buttonNames, String[] buttonReturn, String entry, int x, int startingY, int starting) {
+        ButtonGroup group = new ButtonGroup();
+        for (int i = 0; i < buttonNames.length; ++i) {
+            JRadioButton f = new JRadioButton(buttonNames[i]);
+            int finalI = i;
+            f.addActionListener(e -> {
+                if(f.isSelected()) NTInstance.getInstance().getDashboardTable().getEntry(entry).setString(buttonReturn[finalI]);
+            });
+            group.add(f);
+            if (i == starting) {
+                f.setSelected(true);
+                NTInstance.getInstance().getDashboardTable().getEntry(entry).setString(buttonReturn[i]);
+            }
+            f.setBounds(x, startingY + 20 * i, 250, 20);
+            display.add(f);
+        }
     }
 
     public void updateValue(String key, NetworkTableValue value) {
