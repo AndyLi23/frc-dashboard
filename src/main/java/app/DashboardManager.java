@@ -2,6 +2,7 @@ package app;
 
 import core.Window;
 import core.menu.RoundedButton;
+import core.util.NTInstance;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -81,6 +82,7 @@ public class DashboardManager extends Window {
 
     @Override
     public void onClose() {
+        NTInstance.getInstance().stopNT();
         for (Window w : openWindows) w.onCloseAction();
     }
 }
