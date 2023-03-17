@@ -41,12 +41,6 @@ public class Display extends MovablePanel implements Serializable {
         checkType(value);
     }
 
-    public void update(ArrayList<Pair> newData) {
-        stored.addAll(newData);
-        while (stored.size() > maxStoredSize) stored.remove(0);
-        for (Pair d : newData) checkType(d.getValue());
-    }
-
     public void checkType(Object value) {
         try {
             Double.parseDouble(String.valueOf(value));

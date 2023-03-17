@@ -4,6 +4,7 @@ import core.Window;
 import core.log.Display;
 import core.log.GraphDisplay;
 import core.log.TextDisplay;
+import core.util.NTInstance;
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -11,6 +12,8 @@ import edu.wpi.first.networktables.NetworkTableValue;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
@@ -22,8 +25,6 @@ import java.util.HashMap;
 
 public class Logger extends Window {
     private final Timer loopTimer;
-    private final NetworkTableInstance nt;
-    private final NetworkTable table;
     private final HashMap<String, Display> panels;
     private long startTime = -1;
     private long lastTime = -1;
@@ -67,6 +68,9 @@ public class Logger extends Window {
         display = new JPanel();
         bar = new JPanel();
 
+        JSlider slider = new JSlider(JSlider.HORIZONTAL, 0, 0, 0);
+        
+
         display.setLayout(null);
         bar.setLayout(null);
 
@@ -78,12 +82,6 @@ public class Logger extends Window {
         bar.setPreferredSize(new Dimension(this.getWidth(), barHeight));
 
         this.pack();
-
-        nt = NetworkTableInstance.getDefault();
-        nt.startClientTeam(1351);
-        nt.startDSClient();
-
-        table = nt.getTable("dashboard");
 
         initiateNT();
 
@@ -120,6 +118,55 @@ public class Logger extends Window {
         }
         panels = pn;
 
+        JRadioButton b1 = new JRadioButton("Preload, Balance");
+        JRadioButton b2 = new JRadioButton("Preload, One Cone, Balance");
+        ButtonGroup group = new ButtonGroup();
+        group.add(b1);
+        group.add(b2);
+
+        b1.addActionListener(e -> {
+            if(b1.isSelected()) NTInstance.getInstance().getDashboardTable().getEntry("auto").setString("preload");
+        });
+
+        b2.addActionListener(e -> {
+            if(b2.isSelected()) NTInstance.getInstance().getDashboardTable().getEntry("auto").setString("one");
+        });
+
+        b1.setSelected(true);
+        NTInstance.getInstance().getDashboardTable().getEntry("auto").setString("preload");
+
+        b1.setBounds(10,50,300,20);
+        b2.setBounds(10,70,300,20);
+
+        display.add(b1);
+        display.add(b2);
+
+
+        JRadioButton f1 = new JRadioButton("LEFT FIELD (Blue)");
+        JRadioButton f2 = new JRadioButton("RIGHT FIELD (Red)");
+        ButtonGroup group2 = new ButtonGroup();
+        group2.add(f1);
+        group2.add(f2);
+
+        f1.addActionListener(e -> {
+            if(f1.isSelected()) NTInstance.getInstance().getDashboardTable().getEntry("fieldside").setString("left");
+        });
+
+        f2.addActionListener(e -> {
+            if(f2.isSelected()) NTInstance.getInstance().getDashboardTable().getEntry("fieldside").setString("right");
+        });
+
+        f1.setSelected(true);
+        NTInstance.getInstance().getDashboardTable().getEntry("fieldside").setString("left");
+
+        f1.setBounds(10,100,300,20);
+        f2.setBounds(10,120,300,20);
+
+        display.add(f1);
+        display.add(f2);
+
+
+
         showWindow();
 
         loopTimer = new Timer((int) (1000./60.), action -> {
@@ -155,7 +202,7 @@ public class Logger extends Window {
     }
 
     public void initiateNT() {
-        table.addEntryListener((tb, key, entry, value, flags) -> {
+        NTInstance.getInstance().getDashboardTable().addEntryListener((tb, key, entry, value, flags) -> {
             updateValue(key, value);
         }, EntryListenerFlags.kNew | EntryListenerFlags.kUpdate);
     }
@@ -195,8 +242,6 @@ public class Logger extends Window {
     @Override
     public void onCloseAction() {
         try {
-            nt.stopClient();
-            nt.stopDSClient();
             loopTimer.stop();
 
 
