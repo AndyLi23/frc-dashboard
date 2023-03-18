@@ -118,8 +118,8 @@ public class Logger extends Window {
         }
         panels = pn;
 
-        addButtonGroup(new String[]{"Preload, Balance", "Preload, One Cone, Balance"},
-                new String[]{"preload", "one"}, "auto", 10, 50, 0);
+        addButtonGroup(new String[]{"Preload, Balance", "Plus Low", "Plus High"},
+                new String[]{"preload", "low", "high"}, "auto", 10, 50, 0);
 
         addButtonGroup(new String[]{"LEFT FIELD (Blue)", "RIGHT FIELD (Red)"},
                 new String[]{"left", "right"}, "fieldside", 10, 100, 0);
