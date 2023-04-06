@@ -118,21 +118,14 @@ public class Logger extends Window {
         }
         panels = pn;
 
-        addButtonGroup(new String[]{"Preload, Balance", "Plus Low", "Plus High"},
-                new String[]{"preload", "low", "high"}, "auto", 10, 50, 0);
+        addButtonGroup(new String[]{"Preload, Balance", "2 + Balance", "2 + Pickup"},
+                new String[]{"preload", "balance", "pick"}, "auto", 10, 50, 2);
 
         addButtonGroup(new String[]{"LEFT FIELD (Blue)", "RIGHT FIELD (Red)"},
-                new String[]{"left", "right"}, "fieldside", 10, 100, 0);
+                new String[]{"left", "right"}, "fieldside", 10, 120, 0);
 
-        addButtonGroup(new String[]{"Top Tag", "Middle Tag", "Bottom Tag"},
-                new String[]{"3", "2", "1"}, "autotag", 300, 50, 2);
-
-        addButtonGroup(new String[]{"Upper Poles", "Lower Poles"},
-                new String[]{"0", "2"}, "autoindex", 300, 120, 1);
-
-        addButtonGroup(new String[]{"Balance", "Don't Balance"},
-                new String[]{"true", "false"}, "autobalance", 10, 150, 0);
-
+        addButtonGroup(new String[]{"Low", "High"},
+                new String[]{"L", "H"}, "autoside", 200, 50, 0);
 
         showWindow();
 
@@ -187,7 +180,7 @@ public class Logger extends Window {
                 f.setSelected(true);
                 NTInstance.getInstance().getDashboardTable().getEntry(entry).setString(buttonReturn[i]);
             }
-            f.setBounds(x, startingY + 20 * i, 250, 20);
+            f.setBounds(x, startingY + 20 * i, 150, 20);
             display.add(f);
         }
     }
